@@ -1,7 +1,8 @@
 /**
- * Maths du coverflow cocktails (carte active centrée nette, latérales inclinées
- * en rotateY et ASSOMBRIES — jamais floutées). Verre détouré dans un cadre
- * hairline or, sur le fond comptoir.
+ * Maths du coverflow « verres posés sur le comptoir » : ancrage PAR LA BASE sur
+ * une même ligne de zinc (transform-origin bottom → la mise à l'échelle se fait
+ * vers la base, donc les verres reposent vraiment sur le bar). Active centré net,
+ * latérales inclinées (rotateY) et assombries — jamais floutées.
  *
  * Partagé entre le rendu serveur (Coverflow.astro, état initial cover=0,
  * fonctionne même sans JS) et le script client. Source unique = pas de divergence.
@@ -18,10 +19,11 @@ export interface CoverState {
 /**
  * Style d'une carte d'indice `i` quand la carte active est `cover`.
  * - a=0 : centre, net, plein format (brightness 1 → aucun filtre)
- * - a=1 : ±54 %, 80 %, inclinée ∓20°, assombrie
- * - a=2 : ±98 %, 62 %, inclinée ∓30°, estompée
+ * - a=1 : glisse de ±52 %, 78 %, inclinée ∓16°, assombrie
+ * - a=2 : ±94 %, 60 %, inclinée ∓24°, estompée
  * - a>2 : hors-champ (invisible, non cliquable)
  * Aucun flou : seules `opacity` et `brightness` distinguent les latérales.
+ * NB : pas de translate Y — l'ancrage bas (CSS) maintient la base sur le zinc.
  */
 export function coverState(i: number, cover: number): CoverState {
   const off = i - cover;
@@ -30,14 +32,14 @@ export function coverState(i: number, cover: number): CoverState {
   if (a === 0) {
     tx = 0; sc = 1; ry = 0; op = 1; z = 30; br = 1;
   } else if (a === 1) {
-    tx = off * 54; sc = 0.8; ry = off > 0 ? -20 : 20; op = 0.82; z = 20; br = 0.55;
+    tx = off * 52; sc = 0.78; ry = off > 0 ? -16 : 16; op = 0.8; z = 20; br = 0.56;
   } else if (a === 2) {
-    tx = off * 98; sc = 0.62; ry = off > 0 ? -30 : 30; op = 0.36; z = 10; br = 0.4;
+    tx = off * 94; sc = 0.6; ry = off > 0 ? -24 : 24; op = 0.34; z = 10; br = 0.4;
   } else {
-    tx = off * 140; sc = 0.55; ry = 0; op = 0; z = 1; br = 0.3;
+    tx = off * 134; sc = 0.54; ry = 0; op = 0; z = 1; br = 0.3;
   }
   return {
-    transform: `translate(-50%,-50%) translateX(${tx}%) scale(${sc}) rotateY(${ry}deg)`,
+    transform: `translateX(-50%) translateX(${tx}%) scale(${sc}) rotateY(${ry}deg)`,
     opacity: String(op),
     zIndex: String(z),
     // brightness(1) sur l'active = identité (net) ; <1 assombrit les latérales

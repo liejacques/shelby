@@ -1,25 +1,24 @@
 ---
 /**
- * Coverflow cocktails — carte active centrée NETTE, latérales inclinées (rotateY)
- * et assombries (jamais floutées). Chaque verre = PIXEL ART détouré (PNG
- * transparent) dans un cadre hairline or, posé sur le fond comptoir. Rendu
- * pixel parfait : `image-rendering: pixelated`, aucun upscale au-delà du natif,
- * zéro flou/halo. Slots nommés remplaçables : /assets/cocktail-<slug>.png.
- * État initial rendu côté serveur (verre 0) → fonctionne même sans JS.
+ * LE COMPTOIR — sélecteur de cocktails posés sur le zinc. Les verres (SVG vivants :
+ * liquide qui frémit + condensation) glissent le long du bar (flèches/swipe/clavier/
+ * points). Chaque verre a sa réflexion sur le zinc poli + son ombre de contact ;
+ * le verre actif laisse un anneau d'eau de condensation sur le bar, qui le suit.
+ * Un seul cartouche nomme le cocktail choisi. État initial rendu côté serveur.
  */
 import { cocktails } from '../data/cocktails';
 import { coverStyleString } from '../lib/coverflow';
 import CocktailVisual from './CocktailVisual.astro';
 const first = cocktails[0];
 ---
-<section class="bar" aria-label="La carte des cocktails — coverflow">
+<section class="bar" aria-label="La carte des cocktails — le comptoir">
   <div class="bg-parallax bar-bg" data-parallax="rect" data-speed="-0.06" data-scale="1.2"></div>
   <div class="bar-overlay"></div>
 
   <div class="bar-head">
     <div class="bar-kicker">— LE SHELBY · 16 —</div>
     <h1 class="bar-title gold-clip">LA CARTE</h1>
-    <p class="bar-lede">Faites défiler les verres, puis ouvrez la fiche.</p>
+    <p class="bar-lede">Choisissez votre verre — il vous attend sur le comptoir.</p>
   </div>
 
   <div
@@ -27,8 +26,13 @@ const first = cocktails[0];
     id="coverflow"
     role="group"
     aria-roledescription="carrousel"
-    aria-label="Cocktails"
+    aria-label="Cocktails posés sur le bar"
   >
+    <!-- le comptoir : flaque de lumière + zinc + arête éclairée -->
+    <div class="bar-light" aria-hidden="true"></div>
+    <div class="bar-surface" aria-hidden="true"></div>
+    <span class="bar-line" aria-hidden="true"></span>
+
     {cocktails.map((c, i) => (
       <div
         class="cf-card"
@@ -39,8 +43,10 @@ const first = cocktails[0];
         data-price={c.price}
         style={coverStyleString(i, 0)}
       >
-        <div class="cf-frame">
-          <CocktailVisual cocktail={c} eager={i === 0} class="cv-fill" />
+        <div class="cf-glasswrap">
+          <span class="cf-wet" aria-hidden="true"></span>
+          <span class="cf-shadow" aria-hidden="true"></span>
+          <span class="cf-glass"><CocktailVisual cocktail={c} eager={i === 0} class="cv-fill" fx /></span>
         </div>
       </div>
     ))}
@@ -86,177 +92,119 @@ const first = cocktails[0];
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    padding: calc(var(--header-h) + 26px) 12px 64px;
+    padding: calc(var(--header-h) + 26px) 12px 60px;
   }
-  .bar-bg { background-image: url(/assets/decor-comptoir.png); background-position: center 40%; }
+  .bar-bg { background-image: url(/assets/decor-comptoir.png); background-position: center 42%; }
   .bar-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(10,8,7,.9), rgba(10,8,7,.66) 40%, rgba(10,8,7,.96));
+    background: linear-gradient(180deg, rgba(10,8,7,.9), rgba(10,8,7,.62) 38%, rgba(10,8,7,.97));
   }
 
   .bar-head { position: relative; z-index: 3; text-align: center; }
-  .bar-kicker {
-    font-family: var(--font-display);
-    font-size: 10px;
-    letter-spacing: .4em;
-    color: var(--gold-soft);
-    padding-left: .4em;
-  }
-  .bar-title {
-    margin: 10px 0 0;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: clamp(24px, 6vw, 44px);
-    letter-spacing: .04em;
-  }
+  .bar-kicker { font-family: var(--font-display); font-size: 10px; letter-spacing: .4em; color: var(--gold-soft); padding-left: .4em; }
+  .bar-title { margin: 10px 0 0; font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 6vw, 44px); letter-spacing: .04em; }
   .bar-lede { margin: 12px 0 0; font-size: 17px; color: var(--muted-1); }
 
-  /* ------------------------------ COVERFLOW ------------------------------ */
+  /* ------------------------------- LE COMPTOIR --------------------------- */
   .cf-stage {
     position: relative;
     z-index: 3;
+    isolation: isolate;
     width: 100%;
     max-width: 1080px;
-    height: clamp(360px, 54vh, 440px);
+    height: clamp(400px, 60vh, 480px);
     perspective: 1500px;
-    margin-top: 14px;
+    margin-top: 12px;
   }
+  /* flaque de lumière chaude au-dessus du verre central */
+  .bar-light {
+    position: absolute;
+    left: 50%; top: 2%;
+    width: min(520px, 84%); height: 76%;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse 44% 56% at 50% 32%, rgba(255,176,86,.20), rgba(255,150,60,.06) 46%, transparent 70%);
+    z-index: 0; pointer-events: none;
+    animation: flicker 5.5s ease-in-out infinite;
+  }
+  /* le zinc : face sombre sous l'arête + arête éclairée à 74 % de hauteur */
+  .bar-surface {
+    position: absolute;
+    left: -6%; right: -6%; top: 74%; bottom: 0;
+    z-index: 1; pointer-events: none;
+    background: linear-gradient(180deg, rgba(40,28,14,.55), rgba(10,8,7,0) 72%);
+  }
+  .bar-line {
+    position: absolute;
+    left: 0; right: 0; top: 74%; height: 1px;
+    z-index: 2; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgba(227,181,82,.5) 22%, rgba(248,226,160,.72) 50%, rgba(227,181,82,.5) 78%, transparent);
+    box-shadow: 0 0 12px rgba(227,181,82,.22);
+  }
+
+  /* carte = verre ancré PAR LA BASE sur le zinc (transform-origin bottom) */
   .cf-card {
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform-style: preserve-3d;
-    transition: transform .55s cubic-bezier(.22,.61,.36,1), opacity .5s ease, filter .5s ease;
+    left: 50%; bottom: 26%;
+    z-index: 5;
+    transform-origin: center bottom;
+    transition: transform .6s cubic-bezier(.21,.72,.26,1), opacity .55s ease, filter .55s ease;
     will-change: transform, opacity;
   }
+  .cf-glasswrap { position: relative; width: clamp(150px, 46vw, 206px); margin: 0 auto; }
 
-  /* cadre hairline or, NET — le verre (PNG transparent) repose sur le comptoir
-     qui transparaît dans le cadre (fond très légèrement teinté) */
-  .cf-frame {
+  /* le verre + sa réflexion sur le zinc poli (box-reflect : Safari/Chrome) */
+  .cf-glass {
     position: relative;
-    width: clamp(188px, 56vw, 256px);
-    padding: 14px;
-    border: 1px solid rgba(227,181,82,.55);
-    background:
-      linear-gradient(180deg, rgba(18,13,8,.34), rgba(8,6,5,.5)),
-      radial-gradient(ellipse at 50% 36%, rgba(255,176,86,.10), transparent 68%);
-    box-shadow: inset 0 0 0 1px rgba(10,8,7,.6);
-  }
-  /* coins dorés discrets (nets) */
-  .cf-frame::before,
-  .cf-frame::after {
-    content: "";
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    border: 1px solid var(--gold-400);
-  }
-  .cf-frame::before { top: 4px; left: 4px; border-right: 0; border-bottom: 0; }
-  .cf-frame::after { bottom: 4px; right: 4px; border-left: 0; border-top: 0; }
-
-  /* carte active : cadre un cran plus lumineux, toujours NET (aucun flou) */
-  .cf-card.is-active .cf-frame { border-color: var(--gold-300); }
-
-  /* ------------------------------- CARTOUCHE ------------------------------ */
-  .bar-info {
-    position: relative;
-    z-index: 4;
-    text-align: center;
-    margin-top: 14px;
-    min-height: 118px;
-    padding: 0 8px;
-  }
-  .bi-name {
-    font-family: var(--font-display);
-    font-size: clamp(13px, 3vw, 17px);
-    letter-spacing: .04em;
-    line-height: 1.4;
-    color: var(--gold-200);
-    transition: opacity .3s ease;
-  }
-  .bi-divider {
+    z-index: 2;
     display: block;
-    margin: 10px auto;
-    width: 54px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--gold-soft), transparent);
+    -webkit-box-reflect: below -8px linear-gradient(to bottom, rgba(0,0,0,.3), transparent 50%);
   }
-  .bi-ing {
-    font-size: clamp(16px, 2.5vw, 19px);
-    line-height: 1.35;
-    color: var(--muted-2);
-    transition: opacity .3s ease;
-    max-width: 460px;
-    margin: 0 auto;
+  /* ombre de contact sous le verre */
+  .cf-shadow {
+    position: absolute;
+    left: 50%; bottom: 3.5%;
+    width: 62%; height: 13px;
+    transform: translateX(-50%);
+    background: radial-gradient(ellipse, rgba(0,0,0,.55), transparent 72%);
+    z-index: 0; pointer-events: none;
   }
-  .bi-row { margin-top: 12px; display: inline-flex; align-items: center; gap: 18px; }
-  .bi-price {
-    font-family: var(--font-display);
-    font-size: clamp(20px, 4vw, 26px);
-    color: var(--gold-400);
-    transition: opacity .3s ease;
-  }
-  .bi-link {
-    font-family: var(--font-display);
-    font-size: 10px;
-    letter-spacing: .16em;
-    color: var(--gold-soft);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    padding-bottom: 3px;
-    transition: color .2s ease, border-color .2s ease;
-  }
-  .bi-link:hover,
-  .bi-link:focus-visible { color: var(--gold-200); border-color: var(--gold-300); }
-  .bar-info.is-swapping .bi-name,
-  .bar-info.is-swapping .bi-ing,
-  .bar-info.is-swapping .bi-price { opacity: 0; }
-
-  /* ------------------------------- CONTRÔLES ------------------------------ */
-  .cf-controls {
-    position: relative;
-    z-index: 4;
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    margin-top: 6px;
-  }
-  .cf-arrow {
-    font-family: var(--font-display);
-    font-size: 20px;
-    color: var(--cream);
-    width: 50px;
-    height: 50px;
-    background: rgba(10,8,7,.6);
-    border: 1px solid rgba(227,181,82,.5);
-    cursor: pointer;
-    transition: background .2s ease, color .2s ease, border-color .2s ease;
-  }
-  .cf-arrow:hover,
-  .cf-arrow:focus-visible { background: var(--gold-400); color: var(--bg); border-color: var(--gold-400); }
-  .cf-dots { display: flex; align-items: center; gap: 10px; }
-  .cf-dot {
-    width: 9px;
-    height: 9px;
-    padding: 0;
+  /* anneau d'eau de condensation — visible sous le verre ACTIF, le suit, respire */
+  .cf-wet {
+    position: absolute;
+    left: 50%; bottom: 0.5%;
+    width: 76%; height: 20px;
+    transform: translateX(-50%);
     border-radius: 50%;
-    border: 1px solid rgba(227,181,82,.5);
-    background: transparent;
-    cursor: pointer;
-    transition: background .25s ease, transform .25s ease, border-color .25s ease;
+    background: radial-gradient(ellipse at 50% 50%, rgba(150,186,200,.16), rgba(150,186,200,.05) 52%, transparent 72%);
+    box-shadow: inset 0 0 0 1px rgba(176,205,216,.10);
+    z-index: 0; pointer-events: none;
+    opacity: 0;
+    transition: opacity .5s ease;
   }
-  .cf-dot:hover,
-  .cf-dot:focus-visible { border-color: var(--gold-300); }
+  .cf-card.is-active .cf-wet { opacity: 1; animation: wetPulse 4.5s ease-in-out infinite; }
+
+  @keyframes wetPulse { 0%, 100% { transform: translateX(-50%) scale(1); opacity: .8; } 50% { transform: translateX(-50%) scale(1.06); opacity: 1; } }
+
+  /* ------------------------------- CARTOUCHE ----------------------------- */
+  .bar-info { position: relative; z-index: 4; text-align: center; margin-top: 12px; min-height: 116px; padding: 0 8px; }
+  .bi-name { font-family: var(--font-display); font-size: clamp(13px, 3vw, 17px); letter-spacing: .04em; line-height: 1.4; color: var(--gold-200); transition: opacity .3s ease; }
+  .bi-divider { display: block; margin: 10px auto; width: 54px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold-soft), transparent); }
+  .bi-ing { font-size: clamp(16px, 2.5vw, 19px); line-height: 1.35; color: var(--muted-2); transition: opacity .3s ease; max-width: 460px; margin: 0 auto; }
+  .bi-row { margin-top: 12px; display: inline-flex; align-items: center; gap: 18px; }
+  .bi-price { font-family: var(--font-display); font-size: clamp(20px, 4vw, 26px); color: var(--gold-400); transition: opacity .3s ease; }
+  .bi-link { font-family: var(--font-display); font-size: 10px; letter-spacing: .16em; color: var(--gold-soft); text-decoration: none; border-bottom: 1px solid transparent; padding-bottom: 3px; transition: color .2s ease, border-color .2s ease; }
+  .bi-link:hover, .bi-link:focus-visible { color: var(--gold-200); border-color: var(--gold-300); }
+  .bar-info.is-swapping .bi-name, .bar-info.is-swapping .bi-ing, .bar-info.is-swapping .bi-price { opacity: 0; }
+
+  /* ------------------------------- CONTRÔLES ----------------------------- */
+  .cf-controls { position: relative; z-index: 4; display: flex; align-items: center; gap: 18px; margin-top: 6px; }
+  .cf-arrow { font-family: var(--font-display); font-size: 20px; color: var(--cream); width: 50px; height: 50px; background: rgba(10,8,7,.6); border: 1px solid rgba(227,181,82,.5); cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+  .cf-arrow:hover, .cf-arrow:focus-visible { background: var(--gold-400); color: var(--bg); border-color: var(--gold-400); }
+  .cf-dots { display: flex; align-items: center; gap: 10px; }
+  .cf-dot { width: 9px; height: 9px; padding: 0; border-radius: 50%; border: 1px solid rgba(227,181,82,.5); background: transparent; cursor: pointer; transition: background .25s ease, transform .25s ease, border-color .25s ease; }
+  .cf-dot:hover, .cf-dot:focus-visible { border-color: var(--gold-300); }
   .cf-dot.is-on { background: var(--gold-400); border-color: var(--gold-300); transform: scale(1.25); }
 
-  .bar-full {
-    position: relative;
-    z-index: 4;
-    margin-top: 22px;
-    font-size: 11px;
-    letter-spacing: .2em;
-    padding: 13px 22px;
-    min-height: 46px;
-  }
+  .bar-full { position: relative; z-index: 4; margin-top: 20px; font-size: 11px; letter-spacing: .2em; padding: 13px 22px; min-height: 46px; }
 </style>

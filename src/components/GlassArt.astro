@@ -1,9 +1,9 @@
 ---
 /**
- * GlassArt — verre de cocktail dessiné en SVG vectoriel, dans l'esprit
- * « Le Shelby · Verres de collection 1920 » : fin liseré or, cristal taillé,
- * liquide ambré dégradé. NET à toute taille (vecteur, jamais flou ni pixelisé).
- * Placeholder élégant en attendant les vrais PNG (cf CocktailVisual).
+ * GlassArt — verre de cocktail en SVG vectoriel (esprit « Verres de collection
+ * 1920 ») : liseré or, cristal taillé, liquide ambré dégradé. NET à toute taille.
+ * Avec `fx` : liquide vivant (frémissement + miroitement) + condensation (gouttes
+ * qui perlent et coulent). Tout figé sous prefers-reduced-motion.
  */
 import type { Cocktail } from '../data/cocktails';
 import { getArt } from '../data/cocktails';
@@ -12,21 +12,36 @@ interface Props {
   cocktail: Cocktail;
   title?: string;
   class?: string;
+  /** effets vivants (liquide + condensation) — réservé au comptoir */
+  fx?: boolean;
 }
-const { cocktail, title, class: cls } = Astro.props;
+const { cocktail, title, class: cls, fx = false } = Astro.props;
 const a = getArt(cocktail.slug);
 const id = `liq-${cocktail.slug}`;
 
-// palette « cristal » (rampe or)
-const GLASS = '#e8d9b0';   // arêtes du verre
-const FACET = '#caa961';   // facettes de taille
-const RIM = '#f3df9a';     // liseré du buvant
-const SHINE = '#fff7e0';   // reflet
+const GLASS = '#e8d9b0';
+const FACET = '#caa961';
+const RIM = '#f3df9a';
+const SHINE = '#fff7e0';
 const GARN = { orange: '#e0962e', cherry: '#b12a3e', lime: '#9fc04e', cucumber: '#8fae6a' } as const;
+
+// gouttes de condensation par type de verre [cx, cy, drip?]
+const BEADS: Record<string, Array<[number, number, boolean?]>> = {
+  rocks: [[40, 46], [58, 50], [44, 68, true], [60, 74], [50, 86], [37, 78, true]],
+  coupe: [[37, 44], [60, 46], [45, 52, true], [56, 54], [50, 49]],
+  highball: [[41, 48], [58, 56], [43, 72, true], [57, 80], [48, 94, true]],
+};
+const rawBeads = fx ? (BEADS[a.glass] ?? []) : [];
+let dripN = 0;
+const beadEls = rawBeads.map(([cx, cy, drip]) => ({
+  cx,
+  cy,
+  cls: drip ? `ga-bead ${dripN++ % 2 === 0 ? 'ga-drip' : 'ga-drip-2'}` : 'ga-bead',
+}));
 ---
 <svg
   class:list={['glassart', cls]}
-  viewBox="0 0 100 128"
+  viewBox="0 0 100 112"
   role="img"
   aria-label={title ?? cocktail.name}
   preserveAspectRatio="xMidYMid meet"
@@ -41,56 +56,45 @@ const GARN = { orange: '#e0962e', cherry: '#b12a3e', lime: '#9fc04e', cucumber: 
 
   {a.glass === 'rocks' && (
     <g fill="none" stroke={GLASS} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      {/* liquide */}
-      <path d="M31,63 L69,63 L68,99 Q68,102 65,102 L35,102 Q32,102 32,99 Z" fill={`url(#${id})`} stroke="none" />
-      <ellipse cx="50" cy="63" rx="19" ry="3.4" fill={a.liquidLight} stroke="none" />
-      {/* glaçon */}
+      <g class="ga-liquid">
+        <path d="M31,63 L69,63 L68,99 Q68,102 65,102 L35,102 Q32,102 32,99 Z" fill={`url(#${id})`} stroke="none" />
+        <ellipse cx="50" cy="63" rx="19" ry="3.4" fill={a.liquidLight} stroke="none" />
+        <ellipse class="ga-glow" cx="46" cy="62" rx="11" ry="2" fill={SHINE} stroke="none" />
+      </g>
       {a.ice && (
         <g stroke="#efe3c4" stroke-width="1">
           <path d="M50,55 L60,64 L50,73 L40,64 Z" fill="rgba(255,255,255,.08)" />
           <path d="M44,64 L50,59" stroke={SHINE} stroke-width="0.9" />
         </g>
       )}
-      {/* facettes (cristal taillé) */}
       <g stroke={FACET} stroke-width="0.7" opacity="0.55">
         <path d="M38,72 L38,99 M50,73 L50,99 M62,72 L62,99" />
         <path d="M32,86 L40,82 L48,86 L56,82 L64,86 L68,84" />
       </g>
-      {/* corps + buvant */}
       <path d="M27,34 L30.5,99 Q30.5,102.5 35,102.5 L65,102.5 Q69.5,102.5 69.5,99 L73,34" />
       <ellipse cx="50" cy="34" rx="23" ry="5.4" stroke={RIM} />
-      {/* reflet */}
       <path d="M35,42 L33,95" stroke={SHINE} stroke-width="1.1" opacity="0.5" />
-      {/* zeste d'orange */}
-      {a.garnish === 'orange' && (
-        <path d="M60,30 q7,-1 8,5 q-1,4 -6,3" stroke={GARN.orange} stroke-width="2.2" />
-      )}
-      {/* fumée */}
-      {a.smoke && (
-        <path d="M52,32 q5,-6 0,-11 q-4,-4 1,-9" stroke="#cdc7ba" stroke-width="1.6" opacity="0.5" />
-      )}
+      {a.garnish === 'orange' && <path d="M60,30 q7,-1 8,5 q-1,4 -6,3" stroke={GARN.orange} stroke-width="2.2" />}
+      {a.smoke && <path class="ga-smoke" d="M52,32 q5,-6 0,-11 q-4,-4 1,-9" stroke="#cdc7ba" stroke-width="1.6" opacity="0.5" />}
     </g>
   )}
 
   {a.glass === 'coupe' && (
     <g fill="none" stroke={GLASS} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      {/* liquide dans la coupe */}
-      <path d="M24,40 Q29,58 50,61 Q71,58 76,40 Z" fill={`url(#${id})`} stroke="none" />
-      <ellipse cx="50" cy="40" rx={a.foam ? 25 : 26} ry="4.2" fill={a.liquidLight} stroke="none" />
-      {a.foam && <ellipse cx="50" cy="38.4" rx="24" ry="3" fill="#efe6cf" stroke="none" />}
-      {/* facettes du calice */}
+      <g class="ga-liquid">
+        <path d="M24,40 Q29,58 50,61 Q71,58 76,40 Z" fill={`url(#${id})`} stroke="none" />
+        <ellipse cx="50" cy="40" rx={a.foam ? 25 : 26} ry="4.2" fill={a.liquidLight} stroke="none" />
+        {a.foam && <ellipse cx="50" cy="38.4" rx="24" ry="3" fill="#efe6cf" stroke="none" />}
+        <ellipse class="ga-glow" cx="44" cy="41" rx="13" ry="2" fill={SHINE} stroke="none" />
+      </g>
       <g stroke={FACET} stroke-width="0.7" opacity="0.5">
         <path d="M34,41 L50,61 M50,61 L66,41 M42,40 L50,61 M58,40 L50,61" />
       </g>
-      {/* calice + buvant */}
       <path d="M20,37 Q26,60 50,64 Q74,60 80,37" />
       <ellipse cx="50" cy="36" rx="30" ry="6" stroke={RIM} />
-      {/* pied */}
       <path d="M50,64 L50,98" stroke-width="2.2" />
       <ellipse cx="50" cy="100" rx="16" ry="3.4" />
-      {/* reflet */}
       <path d="M30,40 Q33,52 44,60" stroke={SHINE} stroke-width="1.1" opacity="0.45" />
-      {/* cerise sur pique */}
       {a.garnish === 'cherry' && (
         <g>
           <path d="M40,29 L61,40" stroke="#cbb06a" stroke-width="1.1" />
@@ -102,38 +106,38 @@ const GARN = { orange: '#e0962e', cherry: '#b12a3e', lime: '#9fc04e', cucumber: 
 
   {a.glass === 'highball' && (
     <g fill="none" stroke={GLASS} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      {/* liquide */}
-      <path d="M36.5,41 L63.5,41 L63.5,101 Q63.5,104 60,104 L40,104 Q36.5,104 36.5,101 Z" fill={`url(#${id})`} stroke="none" />
-      <ellipse cx="50" cy="41" rx="13.5" ry="2.8" fill={a.liquidLight} stroke="none" />
-      {/* glaçons */}
+      <g class="ga-liquid">
+        <path d="M36.5,41 L63.5,41 L63.5,101 Q63.5,104 60,104 L40,104 Q36.5,104 36.5,101 Z" fill={`url(#${id})`} stroke="none" />
+        <ellipse cx="50" cy="41" rx="13.5" ry="2.8" fill={a.liquidLight} stroke="none" />
+        <ellipse class="ga-glow" cx="46" cy="42" rx="9" ry="1.6" fill={SHINE} stroke="none" />
+      </g>
       <g stroke="#efe3c4" stroke-width="0.9">
         <rect x="42" y="54" width="11" height="11" rx="1.5" transform="rotate(8 47 59)" fill="rgba(255,255,255,.07)" />
         <rect x="48" y="72" width="10" height="10" rx="1.5" transform="rotate(-10 53 77)" fill="rgba(255,255,255,.06)" />
       </g>
-      {/* bulles */}
       {a.bubbles && (
         <g fill={SHINE} stroke="none" opacity="0.5">
           <circle cx="44" cy="88" r="1.1" /><circle cx="55" cy="94" r="0.9" /><circle cx="48" cy="98" r="1" /><circle cx="58" cy="84" r="0.8" />
         </g>
       )}
-      {/* concombre */}
       {a.garnish === 'cucumber' && (
         <g>
           <ellipse cx="43" cy="66" rx="2.6" ry="4.6" fill={GARN.cucumber} stroke="#6f8c4f" stroke-width="0.7" />
           <ellipse cx="43" cy="84" rx="2.6" ry="4.6" fill={GARN.cucumber} stroke="#6f8c4f" stroke-width="0.7" />
         </g>
       )}
-      {/* corps + buvant */}
       <path d="M36,26 L36,101 Q36,105 40,105 L60,105 Q64,105 64,101 L64,26" />
       <ellipse cx="50" cy="26" rx="14" ry="4" stroke={RIM} />
-      {/* paille + reflet */}
       <path d="M57,16 L53,58" stroke="#d8b96a" stroke-width="1.6" />
       <path d="M40,32 L40,99" stroke={SHINE} stroke-width="1" opacity="0.45" />
     </g>
   )}
-</svg>
 
-<style>
-  /* dimensionnement réel piloté par la classe passée (cv-fill / cv-contain) */
-  .glassart { display: block; }
-</style>
+  {beadEls.length > 0 && (
+    <g stroke="none">
+      {beadEls.map((b) => (
+        <circle class={b.cls} cx={b.cx} cy={b.cy} r="1.15" fill="#d6ecf2" opacity="0.5" />
+      ))}
+    </g>
+  )}
+</svg>

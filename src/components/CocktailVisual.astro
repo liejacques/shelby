@@ -14,8 +14,10 @@ interface Props {
   eager?: boolean;
   /** classe de dimensionnement : 'cv-fill' (remplit la largeur) ou 'cv-contain' (tient dans la boîte) */
   class?: string;
+  /** effets vivants (liquide + condensation) sur le verre SVG — comptoir only */
+  fx?: boolean;
 }
-const { cocktail, eager = false, class: cls = 'cv-fill' } = Astro.props;
+const { cocktail, eager = false, class: cls = 'cv-fill', fx = false } = Astro.props;
 
 const pngPath = fileURLToPath(new URL(`../../public/assets/cocktail-${cocktail.slug}.png`, import.meta.url));
 const hasPng = existsSync(pngPath);
@@ -23,5 +25,5 @@ const hasPng = existsSync(pngPath);
 {hasPng ? (
   <img class={cls} src={cocktail.img} alt={cocktail.name} width="280" height="330" loading={eager ? 'eager' : 'lazy'} decoding="async" />
 ) : (
-  <GlassArt cocktail={cocktail} class={cls} />
+  <GlassArt cocktail={cocktail} class={cls} fx={fx} />
 )}

@@ -257,6 +257,34 @@ button { font-family: inherit; }
   image-rendering: pixelated;
 }
 
+/* ===== VERRE VIVANT (GlassArt) — global (fiable en dev ET en build) =========
+   Classes ga-* portées par le SVG du verre ; le frein reduced-motion global plus
+   bas fige ces animations (durée ~0, 1 itération). */
+.glassart { display: block; }
+.ga-liquid {
+  transform-box: fill-box;
+  transform-origin: 50% 78%;
+  animation: liqSway 6.5s ease-in-out infinite;
+}
+.ga-glow { animation: liqGlow 5s ease-in-out infinite; }
+.ga-bead { fill: #d6ecf2; opacity: .5; }
+.ga-drip { animation: drip 5s ease-in infinite; }
+.ga-drip-2 { animation: drip 5s ease-in 2.4s infinite; }
+.ga-smoke {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: smokeRise 6s ease-in-out infinite;
+}
+@keyframes liqSway { 0%, 100% { transform: rotate(-0.7deg); } 50% { transform: rotate(0.7deg); } }
+@keyframes liqGlow { 0%, 100% { opacity: .12; } 50% { opacity: .4; } }
+@keyframes drip {
+  0% { transform: translateY(0); opacity: 0; }
+  14% { opacity: .6; }
+  85% { opacity: .42; }
+  100% { transform: translateY(22px); opacity: 0; }
+}
+@keyframes smokeRise { 0%, 100% { opacity: .35; transform: translateY(0); } 50% { opacity: .6; transform: translateY(-2px); } }
+
 /* visible uniquement pour les lecteurs d'écran */
 .sr-only {
   position: absolute;
