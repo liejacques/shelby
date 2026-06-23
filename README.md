@@ -56,7 +56,8 @@ src/
   scripts/site.ts        menu plein écran (focus-trap/Esc), parallaxe, smooth-scroll
   layouts/BaseLayout.astro  <head> SEO/OG par page + chrome partagé + JSON-LD
   components/            Header, MenuOverlay, Footer, Hero, Coverflow, CocktailList,
-                         InfosPanels, MapBlock, PageHeader, AmbianceBand, Logo
+                         CocktailVisual + GlassArt (verres SVG), InfosPanels, MapBlock,
+                         PageHeader, AmbianceBand, Logo
   pages/                 une route .astro par page (+ carte/[slug].astro, sitemap.xml.ts)
 astro.config.mjs         site + base optionnel, output static
 ```
@@ -69,6 +70,10 @@ astro.config.mjs         site + base optionnel, output static
   `src/pages/mentions-legales.astro` (forme juridique, SIRET, directeur de publication, hébergeur retenu).
 - **Photos réelles** : remplacer les *placeholders* de `/galerie/` et `/dress-code/`
   (emplacements nommés) par les vraies photos du bar.
+- **Verres des cocktails** : par défaut, des verres **SVG « collection »** (composant
+  `GlassArt`, nets à toute taille). Pour utiliser de vrais visuels, déposer un PNG transparent
+  nommé `public/assets/cocktail-<slug>.png` (ex. `cocktail-old-fashioned.png`) : `CocktailVisual`
+  le détecte au build et l'affiche automatiquement à la place du SVG (rendu pixel net).
 - **Événements** : remplacer les exemples par la vraie programmation (actuellement marqués « Exemple »).
 
 ## Personnalisation rapide
