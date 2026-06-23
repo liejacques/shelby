@@ -235,16 +235,15 @@ button { font-family: inherit; }
 /* cible du skip-link : focusable sans anneau visible (conteneur non interactif) */
 #main:focus { outline: none; }
 
-/* visuels cocktails (SVG verre OU PNG fourni) — dimensionnement partagé.
-   image-rendering ne s'applique qu'au cas PNG (sans effet sur le SVG). */
+/* visuels cocktails (PHOTO PNG détourée OU SVG de repli) — dimensionnement partagé.
+   Rendu LISSE (photos) : pas d'image-rendering pixelated. Jamais d'upscale au-delà
+   du natif (les PNG fournis sont haute réso → toujours en downscale = net). */
 .cv-fill {
   display: block;
   width: 100%;
   height: auto;
-  max-width: 280px;          /* jamais d'upscale au-delà du natif (cas PNG) */
+  max-width: 300px;
   margin-inline: auto;
-  image-rendering: crisp-edges;
-  image-rendering: pixelated;
 }
 .cv-contain {
   display: block;
@@ -253,8 +252,6 @@ button { font-family: inherit; }
   max-width: 100%;
   max-height: 100%;
   margin: auto;
-  image-rendering: crisp-edges;
-  image-rendering: pixelated;
 }
 
 /* ===== VERRE VIVANT (GlassArt) — global (fiable en dev ET en build) =========

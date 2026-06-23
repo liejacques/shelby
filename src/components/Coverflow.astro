@@ -1,10 +1,14 @@
 ---
 /**
- * LE COMPTOIR — sélecteur de cocktails posés sur le zinc. Les verres (SVG vivants :
- * liquide qui frémit + condensation) glissent le long du bar (flèches/swipe/clavier/
- * points). Chaque verre a sa réflexion sur le zinc poli + son ombre de contact ;
- * le verre actif laisse un anneau d'eau de condensation sur le bar, qui le suit.
- * Un seul cartouche nomme le cocktail choisi. État initial rendu côté serveur.
+ * LE COMPTOIR — on fait COULISSER les verres sur le bar. Maths du coverflow
+ * inchangées (coverState). Couche « physique » par-dessus :
+ *  - glisse inertielle (easing) + inclinaison de poids + micro-pose (script + CSS)
+ *  - reflet flouté sur le marbre (copie miroir), suit le verre
+ *  - anneau de condensation sous le verre actif
+ *  - traînée humide derrière le verre quand il glisse (#cf-trail)
+ *  - glint doré qui balaie le liseré à la pose
+ * Verres = PHOTOS détourées (slots /assets/cocktail-<slug>.png) ; SVG en repli.
+ * Rendu net (pas de pixelated), aucun flou sur le verre actif.
  */
 import { cocktails } from '../data/cocktails';
 import { coverStyleString } from '../lib/coverflow';
@@ -14,11 +18,12 @@ const first = cocktails[0];
 <section class="bar" aria-label="La carte des cocktails — le comptoir">
   <div class="bg-parallax bar-bg" data-parallax="rect" data-speed="-0.06" data-scale="1.2"></div>
   <div class="bar-overlay"></div>
+  <div class="bar-flicker" aria-hidden="true"></div>
 
   <div class="bar-head">
     <div class="bar-kicker">— LE SHELBY · 16 —</div>
     <h1 class="bar-title gold-clip">LA CARTE</h1>
-    <p class="bar-lede">Choisissez votre verre — il vous attend sur le comptoir.</p>
+    <p class="bar-lede">Faites coulisser les verres sur le comptoir.</p>
   </div>
 
   <div
@@ -28,10 +33,11 @@ const first = cocktails[0];
     aria-roledescription="carrousel"
     aria-label="Cocktails posés sur le bar"
   >
-    <!-- le comptoir : flaque de lumière + zinc + arête éclairée -->
+    <div class="bar-haze" aria-hidden="true"></div>
     <div class="bar-light" aria-hidden="true"></div>
     <div class="bar-surface" aria-hidden="true"></div>
     <span class="bar-line" aria-hidden="true"></span>
+    <span class="cf-trail" id="cf-trail" aria-hidden="true"></span>
 
     {cocktails.map((c, i) => (
       <div
@@ -43,16 +49,16 @@ const first = cocktails[0];
         data-price={c.price}
         style={coverStyleString(i, 0)}
       >
-        <div class="cf-glasswrap">
-          <span class="cf-wet" aria-hidden="true"></span>
-          <span class="cf-shadow" aria-hidden="true"></span>
-          <span class="cf-glass"><CocktailVisual cocktail={c} eager={i === 0} class="cv-fill" fx /></span>
+        <span class="cf-ring" aria-hidden="true"></span>
+        <div class="cf-physics">
+          <span class="cf-glass"><CocktailVisual cocktail={c} eager={i === 0} class="cv-fill" /></span>
+          <span class="cf-reflect" aria-hidden="true"><CocktailVisual cocktail={c} class="cv-fill" /></span>
+          <span class="cf-glint" aria-hidden="true"></span>
         </div>
       </div>
     ))}
   </div>
 
-  <!-- cartouche du verre sélectionné (mis à jour au défilé) -->
   <div class="bar-info" id="bar-info" aria-live="polite">
     <div class="bi-name" id="bi-name">{first.name}</div>
     <span class="bi-divider"></span>
@@ -67,14 +73,7 @@ const first = cocktails[0];
     <button type="button" class="cf-arrow" id="cf-prev" aria-label="Cocktail précédent">‹</button>
     <div class="cf-dots" id="cf-dots" role="tablist" aria-label="Sélection du cocktail">
       {cocktails.map((c, i) => (
-        <button
-          type="button"
-          class:list={['cf-dot', { 'is-on': i === 0 }]}
-          data-go={i}
-          role="tab"
-          aria-selected={i === 0 ? 'true' : 'false'}
-          aria-label={`Aller à ${c.name}`}
-        ></button>
+        <button type="button" class:list={['cf-dot', { 'is-on': i === 0 }]} data-go={i} role="tab" aria-selected={i === 0 ? 'true' : 'false'} aria-label={`Aller à ${c.name}`}></button>
       ))}
     </div>
     <button type="button" class="cf-arrow" id="cf-next" aria-label="Cocktail suivant">›</button>
@@ -84,21 +83,16 @@ const first = cocktails[0];
 </section>
 
 <style>
-  .bar {
-    position: relative;
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    padding: calc(var(--header-h) + 26px) 12px 60px;
-  }
+  .bar { position: relative; min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; padding: calc(var(--header-h) + 26px) 12px 58px; }
   .bar-bg { background-image: url(/assets/decor-comptoir.png); background-position: center 42%; }
-  .bar-overlay {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(10,8,7,.9), rgba(10,8,7,.62) 38%, rgba(10,8,7,.97));
+  .bar-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,8,7,.9), rgba(10,8,7,.6) 38%, rgba(10,8,7,.97)); }
+  /* vacillement doux des lampes sur le mur de bouteilles */
+  .bar-flicker {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 30% 26% at 28% 26%, rgba(255,182,92,.06), transparent 60%),
+      radial-gradient(ellipse 26% 24% at 74% 30%, rgba(255,182,92,.05), transparent 60%);
+    animation: barFlicker 6.5s ease-in-out infinite;
   }
 
   .bar-head { position: relative; z-index: 3; text-align: center; }
@@ -107,84 +101,50 @@ const first = cocktails[0];
   .bar-lede { margin: 12px 0 0; font-size: 17px; color: var(--muted-1); }
 
   /* ------------------------------- LE COMPTOIR --------------------------- */
-  .cf-stage {
-    position: relative;
-    z-index: 3;
-    isolation: isolate;
-    width: 100%;
-    max-width: 1080px;
-    height: clamp(400px, 60vh, 480px);
-    perspective: 1500px;
-    margin-top: 12px;
-  }
-  /* flaque de lumière chaude au-dessus du verre central */
-  .bar-light {
-    position: absolute;
-    left: 50%; top: 2%;
-    width: min(520px, 84%); height: 76%;
-    transform: translateX(-50%);
-    background: radial-gradient(ellipse 44% 56% at 50% 32%, rgba(255,176,86,.20), rgba(255,150,60,.06) 46%, transparent 70%);
-    z-index: 0; pointer-events: none;
-    animation: flicker 5.5s ease-in-out infinite;
-  }
-  /* le zinc : face sombre sous l'arête + arête éclairée à 74 % de hauteur */
-  .bar-surface {
-    position: absolute;
-    left: -6%; right: -6%; top: 74%; bottom: 0;
-    z-index: 1; pointer-events: none;
-    background: linear-gradient(180deg, rgba(40,28,14,.55), rgba(10,8,7,0) 72%);
-  }
-  .bar-line {
-    position: absolute;
-    left: 0; right: 0; top: 74%; height: 1px;
-    z-index: 2; pointer-events: none;
-    background: linear-gradient(90deg, transparent, rgba(227,181,82,.5) 22%, rgba(248,226,160,.72) 50%, rgba(227,181,82,.5) 78%, transparent);
-    box-shadow: 0 0 12px rgba(227,181,82,.22);
-  }
+  .cf-stage { position: relative; z-index: 3; isolation: isolate; width: 100%; max-width: 1080px; height: clamp(400px, 60vh, 480px); perspective: 1500px; margin-top: 12px; }
 
-  /* carte = verre ancré PAR LA BASE sur le zinc (transform-origin bottom) */
+  /* brume de chaleur qui dérive au-dessus du bar */
+  .bar-haze { position: absolute; left: 6%; right: 6%; top: 22%; height: 46%; z-index: 0; pointer-events: none; background: radial-gradient(ellipse 70% 100% at 50% 50%, rgba(210,200,184,.05), transparent 72%); animation: hazeDrift 16s ease-in-out infinite; }
+  /* flaque de lumière chaude sur le verre central */
+  .bar-light { position: absolute; left: 50%; top: 2%; width: min(520px, 84%); height: 76%; transform: translateX(-50%); background: radial-gradient(ellipse 44% 56% at 50% 32%, rgba(255,176,86,.20), rgba(255,150,60,.06) 46%, transparent 70%); z-index: 0; pointer-events: none; animation: flicker 5.5s ease-in-out infinite; }
+  /* le zinc / marbre ciré : face sombre + arête éclairée à 74 % */
+  .bar-surface { position: absolute; left: -6%; right: -6%; top: 74%; bottom: 0; z-index: 1; pointer-events: none; background: linear-gradient(180deg, rgba(40,28,14,.5), rgba(10,8,7,0) 72%); }
+  .bar-line { position: absolute; left: 0; right: 0; top: 74%; height: 1px; z-index: 2; pointer-events: none; background: linear-gradient(90deg, transparent, rgba(227,181,82,.5) 22%, rgba(248,226,160,.72) 50%, rgba(227,181,82,.5) 78%, transparent); box-shadow: 0 0 12px rgba(227,181,82,.22); }
+  /* traînée humide laissée par le verre qui glisse */
+  .cf-trail { position: absolute; left: 50%; top: 74%; width: clamp(150px, 42vw, 240px); height: 18px; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(ellipse at 50% 50%, rgba(186,210,220,.16), transparent 72%); opacity: 0; z-index: 2; pointer-events: none; }
+  .cf-trail.trail-next { animation: trailNext .62s ease-out; }
+  .cf-trail.trail-prev { animation: trailPrev .62s ease-out; }
+
+  /* carte = verre ancré PAR LA BASE sur le zinc, glisse inertielle */
   .cf-card {
-    position: absolute;
-    left: 50%; bottom: 26%;
-    z-index: 5;
+    position: absolute; left: 50%; bottom: 26%; z-index: 5;
     transform-origin: center bottom;
-    transition: transform .6s cubic-bezier(.21,.72,.26,1), opacity .55s ease, filter .55s ease;
+    transition: transform .72s cubic-bezier(.14,.8,.18,1), opacity .5s ease, filter .5s ease;
     will-change: transform, opacity;
   }
-  .cf-glasswrap { position: relative; width: clamp(150px, 46vw, 206px); margin: 0 auto; }
+  /* anneau de condensation sous le verre ACTIF (sur le bar, ne s'incline pas) */
+  .cf-ring { position: absolute; left: 50%; bottom: -1%; width: clamp(140px, 40vw, 220px); height: 22px; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(ellipse at 50% 50%, rgba(186,210,220,.17), rgba(186,210,220,.045) 55%, transparent 72%); z-index: 0; opacity: 0; transition: opacity .5s ease; pointer-events: none; }
+  .cf-card.is-active .cf-ring { opacity: 1; animation: ringBreathe 5s ease-in-out infinite; }
 
-  /* le verre + sa réflexion sur le zinc poli (box-reflect : Safari/Chrome) */
-  .cf-glass {
-    position: relative;
-    z-index: 2;
-    display: block;
-    -webkit-box-reflect: below -8px linear-gradient(to bottom, rgba(0,0,0,.3), transparent 50%);
-  }
-  /* ombre de contact sous le verre */
-  .cf-shadow {
-    position: absolute;
-    left: 50%; bottom: 3.5%;
-    width: 62%; height: 13px;
-    transform: translateX(-50%);
-    background: radial-gradient(ellipse, rgba(0,0,0,.55), transparent 72%);
-    z-index: 0; pointer-events: none;
-  }
-  /* anneau d'eau de condensation — visible sous le verre ACTIF, le suit, respire */
-  .cf-wet {
-    position: absolute;
-    left: 50%; bottom: 0.5%;
-    width: 76%; height: 20px;
-    transform: translateX(-50%);
-    border-radius: 50%;
-    background: radial-gradient(ellipse at 50% 50%, rgba(150,186,200,.16), rgba(150,186,200,.05) 52%, transparent 72%);
-    box-shadow: inset 0 0 0 1px rgba(176,205,216,.10);
-    z-index: 0; pointer-events: none;
-    opacity: 0;
-    transition: opacity .5s ease;
-  }
-  .cf-card.is-active .cf-wet { opacity: 1; animation: wetPulse 4.5s ease-in-out infinite; }
+  /* couche physique : inclinaison de poids + micro-pose (déclenchée au défilé) */
+  .cf-physics { position: relative; width: clamp(168px, 46vw, 262px); margin: 0 auto; transform-origin: center bottom; will-change: transform; }
+  .cf-physics.pose-next { animation: poseNext .7s cubic-bezier(.16,.78,.2,1); }
+  .cf-physics.pose-prev { animation: posePrev .7s cubic-bezier(.16,.78,.2,1); }
 
-  @keyframes wetPulse { 0%, 100% { transform: translateX(-50%) scale(1); opacity: .8; } 50% { transform: translateX(-50%) scale(1.06); opacity: 1; } }
+  .cf-glass { display: block; position: relative; z-index: 2; }
+  /* reflet flouté sur le marbre — suit le verre */
+  .cf-reflect {
+    position: absolute; left: 0; right: 0; top: 99%; z-index: 1;
+    transform: scaleY(-1); transform-origin: top;
+    filter: blur(2px) brightness(.68);
+    opacity: .22; pointer-events: none;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.85), transparent 54%);
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,.85), transparent 54%);
+  }
+  /* glint doré qui balaie le verre à la pose */
+  .cf-glint { position: absolute; inset: 0; z-index: 3; overflow: hidden; pointer-events: none; }
+  .cf-glint::before { content: ""; position: absolute; top: -8%; bottom: -8%; left: -55%; width: 44%; background: linear-gradient(100deg, transparent, rgba(255,243,206,.5), transparent); transform: skewX(-14deg); opacity: 0; }
+  .cf-glint.is-glint::before { animation: glintSweep .75s ease-in-out; }
 
   /* ------------------------------- CARTOUCHE ----------------------------- */
   .bar-info { position: relative; z-index: 4; text-align: center; margin-top: 12px; min-height: 116px; padding: 0 8px; }
@@ -207,4 +167,30 @@ const first = cocktails[0];
   .cf-dot.is-on { background: var(--gold-400); border-color: var(--gold-300); transform: scale(1.25); }
 
   .bar-full { position: relative; z-index: 4; margin-top: 20px; font-size: 11px; letter-spacing: .2em; padding: 13px 22px; min-height: 46px; }
+
+  /* ------------------------------- KEYFRAMES ----------------------------- */
+  @keyframes poseNext {
+    0% { transform: rotate(3.2deg) translateY(-3px) scale(.985); }
+    55% { transform: rotate(-1.1deg) translateY(0) scale(1.014); }
+    78% { transform: rotate(.4deg) scale(.997); }
+    100% { transform: rotate(0) translateY(0) scale(1); }
+  }
+  @keyframes posePrev {
+    0% { transform: rotate(-3.2deg) translateY(-3px) scale(.985); }
+    55% { transform: rotate(1.1deg) translateY(0) scale(1.014); }
+    78% { transform: rotate(-.4deg) scale(.997); }
+    100% { transform: rotate(0) translateY(0) scale(1); }
+  }
+  @keyframes trailNext { 0% { opacity: .5; transform: translate(-50%,-50%) translateX(36%) scaleX(1.6); } 100% { opacity: 0; transform: translate(-50%,-50%) translateX(0) scaleX(.4); } }
+  @keyframes trailPrev { 0% { opacity: .5; transform: translate(-50%,-50%) translateX(-36%) scaleX(1.6); } 100% { opacity: 0; transform: translate(-50%,-50%) translateX(0) scaleX(.4); } }
+  @keyframes glintSweep { 0% { transform: translateX(0) skewX(-14deg); opacity: 0; } 25% { opacity: .7; } 100% { transform: translateX(440%) skewX(-14deg); opacity: 0; } }
+  @keyframes ringBreathe { 0%, 100% { opacity: .8; } 50% { opacity: 1; } }
+  @keyframes hazeDrift { 0%, 100% { opacity: .35; transform: translateX(-2.5%); } 50% { opacity: .62; transform: translateX(2.5%); } }
+  @keyframes barFlicker { 0%, 100% { opacity: .9; } 30% { opacity: .68; } 55% { opacity: 1; } 80% { opacity: .76; } }
+
+  /* repli mouvement réduit : pas de glisse/traînée/pose, reflet & anneau statiques */
+  @media (prefers-reduced-motion: reduce) {
+    .cf-card { transition: opacity .25s ease; }
+    .bar-haze, .bar-light, .bar-flicker, .cf-card.is-active .cf-ring { animation: none; }
+  }
 </style>

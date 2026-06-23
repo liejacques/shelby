@@ -37,6 +37,29 @@ import CocktailList from '../../components/CocktailList.astro';
     const ingEl = document.getElementById('bi-ing');
     const priceEl = document.getElementById('bi-price');
     const linkEl = document.getElementById('bi-link') as HTMLAnchorElement | null;
+    const trail = document.getElementById('cf-trail');
+
+    // relance une animation en retirant/réajoutant la classe (reflow forcé)
+    const restart = (el: Element | null | undefined, ...cls: string[]) => {
+      if (!el) return;
+      el.classList.remove(...cls);
+      void (el as HTMLElement).offsetWidth;
+    };
+
+    // « physique » de la pose : inclinaison de poids + micro-rebond + glint + traînée
+    function pulse(dir: number) {
+      if (reduced) return;
+      const active = cards[cover];
+      const phys = active.querySelector<HTMLElement>('.cf-physics');
+      const glint = active.querySelector<HTMLElement>('.cf-glint');
+      const poseCls = dir > 0 ? 'pose-next' : 'pose-prev';
+      restart(phys, 'pose-next', 'pose-prev');
+      phys?.classList.add(poseCls);
+      restart(glint, 'is-glint');
+      glint?.classList.add('is-glint');
+      restart(trail, 'trail-next', 'trail-prev');
+      trail?.classList.add(dir > 0 ? 'trail-next' : 'trail-prev');
+    }
 
     let cover = 0;
     let swapTimer = 0;
@@ -77,11 +100,13 @@ import CocktailList from '../../components/CocktailList.astro';
     }
 
     const go = (i: number) => {
-      const next = clamp(i);
-      if (next === cover) return;
-      cover = next;
+      const target = clamp(i);
+      if (target === cover) return;
+      const dir = target > cover ? 1 : -1;
+      cover = target;
       layout();
       updateInfo();
+      pulse(dir);
     };
     const next = () => go(cover + 1);
     const prev = () => go(cover - 1);
