@@ -1,0 +1,262 @@
+---
+/**
+ * Coverflow cocktails — carte active centrée NETTE, latérales inclinées (rotateY)
+ * et assombries (jamais floutées). Chaque verre = PIXEL ART détouré (PNG
+ * transparent) dans un cadre hairline or, posé sur le fond comptoir. Rendu
+ * pixel parfait : `image-rendering: pixelated`, aucun upscale au-delà du natif,
+ * zéro flou/halo. Slots nommés remplaçables : /assets/cocktail-<slug>.png.
+ * État initial rendu côté serveur (verre 0) → fonctionne même sans JS.
+ */
+import { cocktails } from '../data/cocktails';
+import { coverStyleString } from '../lib/coverflow';
+import CocktailVisual from './CocktailVisual.astro';
+const first = cocktails[0];
+---
+<section class="bar" aria-label="La carte des cocktails — coverflow">
+  <div class="bg-parallax bar-bg" data-parallax="rect" data-speed="-0.06" data-scale="1.2"></div>
+  <div class="bar-overlay"></div>
+
+  <div class="bar-head">
+    <div class="bar-kicker">— LE SHELBY · 16 —</div>
+    <h1 class="bar-title gold-clip">LA CARTE</h1>
+    <p class="bar-lede">Faites défiler les verres, puis ouvrez la fiche.</p>
+  </div>
+
+  <div
+    class="cf-stage"
+    id="coverflow"
+    role="group"
+    aria-roledescription="carrousel"
+    aria-label="Cocktails"
+  >
+    {cocktails.map((c, i) => (
+      <div
+        class="cf-card"
+        data-index={i}
+        data-href={`/carte/${c.slug}/`}
+        data-name={c.name}
+        data-ing={c.ingredients}
+        data-price={c.price}
+        style={coverStyleString(i, 0)}
+      >
+        <div class="cf-frame">
+          <CocktailVisual cocktail={c} eager={i === 0} class="cv-fill" />
+        </div>
+      </div>
+    ))}
+  </div>
+
+  <!-- cartouche du verre sélectionné (mis à jour au défilé) -->
+  <div class="bar-info" id="bar-info" aria-live="polite">
+    <div class="bi-name" id="bi-name">{first.name}</div>
+    <span class="bi-divider"></span>
+    <div class="bi-ing" id="bi-ing">{first.ingredients}</div>
+    <div class="bi-row">
+      <span class="bi-price" id="bi-price">{first.price}</span>
+      <a class="bi-link" id="bi-link" href={`/carte/${first.slug}/`}>VOIR LA FICHE ›</a>
+    </div>
+  </div>
+
+  <div class="cf-controls">
+    <button type="button" class="cf-arrow" id="cf-prev" aria-label="Cocktail précédent">‹</button>
+    <div class="cf-dots" id="cf-dots" role="tablist" aria-label="Sélection du cocktail">
+      {cocktails.map((c, i) => (
+        <button
+          type="button"
+          class:list={['cf-dot', { 'is-on': i === 0 }]}
+          data-go={i}
+          role="tab"
+          aria-selected={i === 0 ? 'true' : 'false'}
+          aria-label={`Aller à ${c.name}`}
+        ></button>
+      ))}
+    </div>
+    <button type="button" class="cf-arrow" id="cf-next" aria-label="Cocktail suivant">›</button>
+  </div>
+
+  <a href="#liste" class="btn btn-ghost bar-full" data-scroll>VOIR LA CARTE COMPLÈTE ▾</a>
+</section>
+
+<style>
+  .bar {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: calc(var(--header-h) + 26px) 12px 64px;
+  }
+  .bar-bg { background-image: url(/assets/decor-comptoir.png); background-position: center 40%; }
+  .bar-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10,8,7,.9), rgba(10,8,7,.66) 40%, rgba(10,8,7,.96));
+  }
+
+  .bar-head { position: relative; z-index: 3; text-align: center; }
+  .bar-kicker {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: .4em;
+    color: var(--gold-soft);
+    padding-left: .4em;
+  }
+  .bar-title {
+    margin: 10px 0 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(24px, 6vw, 44px);
+    letter-spacing: .04em;
+  }
+  .bar-lede { margin: 12px 0 0; font-size: 17px; color: var(--muted-1); }
+
+  /* ------------------------------ COVERFLOW ------------------------------ */
+  .cf-stage {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    max-width: 1080px;
+    height: clamp(360px, 54vh, 440px);
+    perspective: 1500px;
+    margin-top: 14px;
+  }
+  .cf-card {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform-style: preserve-3d;
+    transition: transform .55s cubic-bezier(.22,.61,.36,1), opacity .5s ease, filter .5s ease;
+    will-change: transform, opacity;
+  }
+
+  /* cadre hairline or, NET — le verre (PNG transparent) repose sur le comptoir
+     qui transparaît dans le cadre (fond très légèrement teinté) */
+  .cf-frame {
+    position: relative;
+    width: clamp(188px, 56vw, 256px);
+    padding: 14px;
+    border: 1px solid rgba(227,181,82,.55);
+    background:
+      linear-gradient(180deg, rgba(18,13,8,.34), rgba(8,6,5,.5)),
+      radial-gradient(ellipse at 50% 36%, rgba(255,176,86,.10), transparent 68%);
+    box-shadow: inset 0 0 0 1px rgba(10,8,7,.6);
+  }
+  /* coins dorés discrets (nets) */
+  .cf-frame::before,
+  .cf-frame::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: 1px solid var(--gold-400);
+  }
+  .cf-frame::before { top: 4px; left: 4px; border-right: 0; border-bottom: 0; }
+  .cf-frame::after { bottom: 4px; right: 4px; border-left: 0; border-top: 0; }
+
+  /* carte active : cadre un cran plus lumineux, toujours NET (aucun flou) */
+  .cf-card.is-active .cf-frame { border-color: var(--gold-300); }
+
+  /* ------------------------------- CARTOUCHE ------------------------------ */
+  .bar-info {
+    position: relative;
+    z-index: 4;
+    text-align: center;
+    margin-top: 14px;
+    min-height: 118px;
+    padding: 0 8px;
+  }
+  .bi-name {
+    font-family: var(--font-display);
+    font-size: clamp(13px, 3vw, 17px);
+    letter-spacing: .04em;
+    line-height: 1.4;
+    color: var(--gold-200);
+    transition: opacity .3s ease;
+  }
+  .bi-divider {
+    display: block;
+    margin: 10px auto;
+    width: 54px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-soft), transparent);
+  }
+  .bi-ing {
+    font-size: clamp(16px, 2.5vw, 19px);
+    line-height: 1.35;
+    color: var(--muted-2);
+    transition: opacity .3s ease;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+  .bi-row { margin-top: 12px; display: inline-flex; align-items: center; gap: 18px; }
+  .bi-price {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 4vw, 26px);
+    color: var(--gold-400);
+    transition: opacity .3s ease;
+  }
+  .bi-link {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: .16em;
+    color: var(--gold-soft);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 3px;
+    transition: color .2s ease, border-color .2s ease;
+  }
+  .bi-link:hover,
+  .bi-link:focus-visible { color: var(--gold-200); border-color: var(--gold-300); }
+  .bar-info.is-swapping .bi-name,
+  .bar-info.is-swapping .bi-ing,
+  .bar-info.is-swapping .bi-price { opacity: 0; }
+
+  /* ------------------------------- CONTRÔLES ------------------------------ */
+  .cf-controls {
+    position: relative;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 6px;
+  }
+  .cf-arrow {
+    font-family: var(--font-display);
+    font-size: 20px;
+    color: var(--cream);
+    width: 50px;
+    height: 50px;
+    background: rgba(10,8,7,.6);
+    border: 1px solid rgba(227,181,82,.5);
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .cf-arrow:hover,
+  .cf-arrow:focus-visible { background: var(--gold-400); color: var(--bg); border-color: var(--gold-400); }
+  .cf-dots { display: flex; align-items: center; gap: 10px; }
+  .cf-dot {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(227,181,82,.5);
+    background: transparent;
+    cursor: pointer;
+    transition: background .25s ease, transform .25s ease, border-color .25s ease;
+  }
+  .cf-dot:hover,
+  .cf-dot:focus-visible { border-color: var(--gold-300); }
+  .cf-dot.is-on { background: var(--gold-400); border-color: var(--gold-300); transform: scale(1.25); }
+
+  .bar-full {
+    position: relative;
+    z-index: 4;
+    margin-top: 22px;
+    font-size: 11px;
+    letter-spacing: .2em;
+    padding: 13px 22px;
+    min-height: 46px;
+  }
+</style>

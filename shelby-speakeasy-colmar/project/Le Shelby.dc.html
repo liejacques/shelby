@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+/* ===== SELF-HOSTED FONTS — RGPD: aucun CDN externe au runtime ===== */
+@font-face{font-family:'VT323';font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/vt323-latin-400.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'VT323';font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/vt323-latin-ext-400.woff2) format('woff2');unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+@font-face{font-family:'Silkscreen';font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/silkscreen-latin-400.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'Silkscreen';font-style:normal;font-weight:400;font-display:swap;src:url(assets/fonts/silkscreen-latin-ext-400.woff2) format('woff2');unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+@font-face{font-family:'Silkscreen';font-style:normal;font-weight:700;font-display:swap;src:url(assets/fonts/silkscreen-latin-700.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'Silkscreen';font-style:normal;font-weight:700;font-display:swap;src:url(assets/fonts/silkscreen-latin-ext-700.woff2) format('woff2');unicode-range:U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+
+/* ===== RESET ===== */
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;background:#0a0807;overflow-x:hidden;}
+::selection{background:#d8a73e;color:#0a0807;}
+img{display:block;}
+
+/* ===== INTRO TRAVELLING — 4 beats, fondus enchaînés (timeline 5s) ===== */
+@keyframes beat1{0%{opacity:0;transform:scale(1.05)}5%{opacity:1}26%{opacity:1}33%{opacity:0;transform:scale(1.17) translateX(-1.5%)}100%{opacity:0;transform:scale(1.17)}}
+@keyframes beat2{0%,24%{opacity:0;transform:scale(1.02)}30%{opacity:1}54%{opacity:1;transform:scale(1.24)}60%,100%{opacity:0;transform:scale(1.3)}}
+@keyframes beat3{0%,50%{opacity:0;transform:scale(1.05)}57%{opacity:1}80%{opacity:1;transform:scale(1.22)}87%,100%{opacity:0;transform:scale(1.27)}}
+@keyframes beat4bg{0%,78%{opacity:0;transform:scale(1.04)}88%{opacity:.55}100%{opacity:.55;transform:scale(1.1)}}
+@keyframes beat4logo{0%,80%{opacity:0;transform:translateY(12px) scale(.97)}90%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:1;transform:translateY(0) scale(1.02)}}
+
+/* ===== AMBIANCE ===== */
+@keyframes flicker{0%,100%{opacity:.9}25%{opacity:.65}40%{opacity:1}55%{opacity:.78}70%{opacity:.95}85%{opacity:.6}}
+@keyframes ember{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:1;transform:scale(1.25)}}
+@keyframes smokeDrift{0%{opacity:0;transform:translateY(20px) translateX(0) scale(.9)}30%{opacity:.5}100%{opacity:0;transform:translateY(-120px) translateX(28px) scale(1.5)}}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(26px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes hintPulse{0%,100%{opacity:.35}50%{opacity:.85}}
+
+/* prefers-reduced-motion : on fige tout à l'état final */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.001s!important;}
+}
+</style>
+</helmet>
+
+<div data-screen-label="Le Shelby — Speakeasy Colmar" style="position:relative;background:#0a0807;color:#e9d9b3;font-family:'VT323',monospace;min-height:100vh;overflow-x:hidden;">
+
+  <!-- ============================================================ -->
+  <!-- INTRO CINÉMATIQUE — travelling 5 s, joué UNE fois, « Passer » -->
+  <!-- ============================================================ -->
+  <sc-if value="{{ introActive }}" hint-placeholder-val="{{ true }}">
+    <div style="position:fixed;inset:0;z-index:9999;background:#000;overflow:hidden;opacity:{{ introOpacity }};transition:opacity .65s ease;">
+
+      <!-- BEAT 1 — RUELLE : apparition, dolly avant -->
+      <div style="position:absolute;inset:0;background:url(assets/decor-ruelle.png) center 38%/cover no-repeat;animation:beat1 5s linear forwards;will-change:opacity,transform;"></div>
+      <!-- BEAT 2 — LA PORTE S'OUVRE : passage froid→chaud -->
+      <div style="position:absolute;inset:0;background:url(assets/decor-porte.png) center/cover no-repeat;animation:beat2 5s linear forwards;will-change:opacity,transform;"></div>
+      <!-- BEAT 3 — INTÉRIEUR : poussée dans la salle -->
+      <div style="position:absolute;inset:0;background:url(assets/decor-salle.png) center/cover no-repeat;animation:beat3 5s linear forwards;will-change:opacity,transform;"></div>
+      <!-- BEAT 4 — LOGO : comptoir en fond + révélation -->
+      <div style="position:absolute;inset:0;background:url(assets/decor-comptoir.png) center/cover no-repeat;animation:beat4bg 5s linear forwards;will-change:opacity,transform;"></div>
+
+      <!-- vignette + grain de lumière permanent -->
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 46%,transparent 28%,rgba(0,0,0,.5) 78%,rgba(0,0,0,.92) 100%);pointer-events:none;"></div>
+
+      <!-- LOGO révélé (beat 4) -->
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;animation:beat4logo 5s linear forwards;will-change:opacity,transform;">
+        <svg viewBox="0 0 120 64" width="58" height="31" style="margin-bottom:6px;filter:drop-shadow(0 0 8px rgba(227,181,82,.5));"><ellipse cx="60" cy="50" rx="52" ry="9" fill="none" stroke="#e3b552" stroke-width="3"/><path d="M30 50 Q30 16 60 16 Q90 16 90 50" fill="#0a0807" stroke="#e3b552" stroke-width="3"/><line x1="32" y1="44" x2="88" y2="44" stroke="#e3b552" stroke-width="3"/></svg>
+        <div style="font-family:'Silkscreen',monospace;font-weight:700;font-size:clamp(30px,8vw,70px);letter-spacing:.04em;line-height:1;background:linear-gradient(180deg,#f6dd92,#e3b552 48%,#9c6f1e);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 10px rgba(227,181,82,.35));">LE SHELBY</div>
+        <div style="margin-top:14px;font-family:'Silkscreen',monospace;font-size:clamp(9px,2vw,13px);letter-spacing:.42em;color:#c9a85f;padding-left:.42em;">BAR · COCKTAILS · COLMAR</div>
+      </div>
+
+      <!-- Bouton PASSER (toujours visible) -->
+      <button onClick="{{ skip }}" style="position:absolute;top:18px;right:18px;z-index:5;font-family:'Silkscreen',monospace;font-size:11px;letter-spacing:.18em;color:#e9d9b3;background:rgba(10,8,7,.55);border:1px solid rgba(227,181,82,.55);padding:11px 16px;cursor:pointer;backdrop-filter:blur(3px);" style-hover="background:#e3b552;color:#0a0807;border-color:#e3b552;">PASSER ›</button>
+    </div>
+  </sc-if>
+
+  <!-- ============================================================ -->
+  <!-- HERO / ACCUEIL — révélation du logo                           -->
+  <!-- ============================================================ -->
+  <section data-screen-label="Hero — Accueil" style="position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:80px 22px 64px;">
+    <!-- décor RUELLE en parallaxe -->
+    <div ref="{{ heroBg }}" style="position:absolute;inset:-9% 0;background:url(assets/decor-ruelle.png) center 36%/cover no-repeat;will-change:transform;"></div>
+    <!-- overlays : froid extérieur + assombrissement lisibilité -->
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,12,18,.55),rgba(10,8,7,.35) 42%,rgba(10,8,7,.92));"></div>
+    <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,rgba(0,0,0,0) 30%,rgba(0,0,0,.6) 100%);"></div>
+    <!-- halo lampe à gaz qui vacille -->
+    <div style="position:absolute;top:18%;left:50%;width:380px;height:380px;margin-left:-190px;background:radial-gradient(circle,rgba(255,170,60,.28),transparent 65%);animation:flicker 4.5s ease-in-out infinite;pointer-events:none;"></div>
+    <!-- fumée légère -->
+    <div style="position:absolute;bottom:6%;left:24%;width:120px;height:200px;background:radial-gradient(ellipse,rgba(214,200,180,.18),transparent 70%);filter:blur(8px);animation:smokeDrift 9s ease-in-out infinite;pointer-events:none;"></div>
+    <div style="position:absolute;bottom:10%;right:26%;width:120px;height:200px;background:radial-gradient(ellipse,rgba(214,200,180,.14),transparent 70%);filter:blur(8px);animation:smokeDrift 11s ease-in-out 2.5s infinite;pointer-events:none;"></div>
+
+    <!-- LOCKUP -->
+    <div style="position:relative;z-index:3;text-align:center;">
+      <svg viewBox="0 0 120 64" width="74" height="40" style="margin:0 auto 8px;filter:drop-shadow(0 0 10px rgba(227,181,82,.5));"><ellipse cx="60" cy="50" rx="52" ry="9" fill="none" stroke="#e3b552" stroke-width="3"/><path d="M30 50 Q30 16 60 16 Q90 16 90 50" fill="rgba(10,8,7,.7)" stroke="#e3b552" stroke-width="3"/><line x1="32" y1="44" x2="88" y2="44" stroke="#e3b552" stroke-width="3"/></svg>
+      <h1 style="margin:0;font-family:'Silkscreen',monospace;font-weight:700;font-size:clamp(36px,11vw,92px);letter-spacing:.03em;line-height:.96;background:linear-gradient(180deg,#f8e2a0,#e3b552 46%,#9c6f1e);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 3px 14px rgba(227,181,82,.4));">LE SHELBY</h1>
+      <div style="display:flex;align-items:center;justify-content:center;gap:14px;margin-top:18px;">
+        <span style="height:1px;width:clamp(24px,10vw,60px);background:linear-gradient(90deg,transparent,#c9a85f);"></span>
+        <span style="font-family:'Silkscreen',monospace;font-size:clamp(10px,2.4vw,15px);letter-spacing:.4em;color:#d8b969;padding-left:.4em;">BAR · COCKTAILS · COLMAR</span>
+        <span style="height:1px;width:clamp(24px,10vw,60px);background:linear-gradient(90deg,#c9a85f,transparent);"></span>
+      </div>
+      <p style="margin:22px auto 0;max-width:430px;font-size:clamp(17px,2.6vw,21px);line-height:1.35;color:#cdbb92;">« Le Shelby n'est pas qu'un bar. C'est une histoire qui se boit à voix basse. »</p>
+
+      <!-- 3 boutons -->
+      <div style="display:flex;flex-wrap:wrap;gap:13px;justify-content:center;margin-top:34px;">
+        <button onClick="{{ toCarte }}" style="font-family:'Silkscreen',monospace;font-size:12px;letter-spacing:.16em;color:#0a0807;background:linear-gradient(180deg,#f0cd76,#d8a73e);border:1px solid #f0cd76;padding:15px 22px;cursor:pointer;min-height:46px;" style-hover="background:#f6dd92;">LA CARTE</button>
+        <button onClick="{{ reserve }}" style="font-family:'Silkscreen',monospace;font-size:12px;letter-spacing:.16em;color:#e9d9b3;background:rgba(10,8,7,.5);border:1px solid rgba(227,181,82,.6);padding:15px 22px;cursor:pointer;min-height:46px;backdrop-filter:blur(3px);" style-hover="background:#e3b552;color:#0a0807;border-color:#e3b552;">RÉSERVER</button>
+        <button onClick="{{ toInfos }}" style="font-family:'Silkscreen',monospace;font-size:12px;letter-spacing:.16em;color:#e9d9b3;background:rgba(10,8,7,.5);border:1px solid rgba(227,181,82,.6);padding:15px 22px;cursor:pointer;min-height:46px;backdrop-filter:blur(3px);" style-hover="background:#e3b552;color:#0a0807;border-color:#e3b552;">NOUS TROUVER</button>
+      </div>
+    </div>
+
+    <!-- indicateur scroll -->
+    <div style="position:absolute;bottom:20px;left:50%;transform:translateX(-50%);z-index:3;font-family:'Silkscreen',monospace;font-size:9px;letter-spacing:.3em;color:#c9a85f;animation:hintPulse 2.4s ease-in-out infinite;">▼ LA CARTE ▼</div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- CARTE COCKTAILS — coverflow (flèches + swipe)                 -->
+  <!-- ============================================================ -->
+  <section ref="{{ carteRef }}" data-screen-label="Carte cocktails" style="position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;padding:74px 12px 88px;">
+    <!-- décor SALLE / travelling, parallaxe + overlay sombre -->
+    <div ref="{{ carteBg }}" style="position:absolute;inset:-9% 0;background:url(assets/decor-salle.png) center/cover no-repeat;will-change:transform;"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,8,7,.94),rgba(10,8,7,.72) 40%,rgba(10,8,7,.96));"></div>
+
+    <!-- en-tête -->
+    <div style="position:relative;z-index:3;text-align:center;margin-bottom:8px;">
+      <div style="font-family:'Silkscreen',monospace;font-size:10px;letter-spacing:.4em;color:#c9a85f;padding-left:.4em;">— LE SHELBY · 16 —</div>
+      <h2 style="margin:10px 0 0;font-family:'Silkscreen',monospace;font-weight:700;font-size:clamp(22px,5.5vw,40px);letter-spacing:.04em;background:linear-gradient(180deg,#f6dd92,#d8a73e 55%,#9c6f1e);-webkit-background-clip:text;background-clip:text;color:transparent;">LA CARTE</h2>
+    </div>
+
+    <!-- coverflow -->
+    <div onTouchStart="{{ onTouchStart }}" onTouchEnd="{{ onTouchEnd }}" style="position:relative;z-index:3;width:100%;max-width:1100px;height:clamp(440px,72vh,520px);perspective:1500px;margin-top:6px;">
+      <sc-for list="{{ cards }}" as="c" hint-placeholder-count="6">
+        <div style="{{ c.style }}" onClick="{{ c.onClick }}">
+          <div style="width:clamp(232px,76vw,288px);background:linear-gradient(180deg,#171107,#0d0a07);border:1px solid rgba(227,181,82,.4);box-shadow:0 0 0 1px rgba(0,0,0,.6),0 24px 60px rgba(0,0,0,.7),inset 0 0 36px rgba(0,0,0,.6);padding:12px;">
+            <div style="position:relative;border:1px solid rgba(227,181,82,.22);overflow:hidden;">
+              <img src="{{ c.img }}" style="width:100%;height:clamp(170px,30vh,210px);object-fit:cover;"/>
+              <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,transparent 40%,rgba(10,8,7,.55) 100%);"></div>
+            </div>
+            <div style="text-align:center;padding:14px 6px 4px;">
+              <div style="font-family:'Silkscreen',monospace;font-size:clamp(11px,2.5vw,13px);line-height:1.55;letter-spacing:.03em;color:#f0cd76;min-height:2.6em;display:flex;align-items:center;justify-content:center;">{{ c.name }}</div>
+              <div style="margin:10px auto;width:50px;height:1px;background:linear-gradient(90deg,transparent,#c9a85f,transparent);"></div>
+              <div style="font-size:clamp(15px,2.4vw,18px);line-height:1.3;color:#bba67d;min-height:2.4em;">{{ c.ingredients }}</div>
+              <div style="margin-top:12px;font-family:'Silkscreen',monospace;font-size:clamp(18px,3.6vw,24px);color:#e3b552;filter:drop-shadow(0 0 8px rgba(227,181,82,.3));">{{ c.price }}</div>
+            </div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- contrôles -->
+    <div style="position:relative;z-index:4;display:flex;align-items:center;gap:26px;margin-top:14px;">
+      <button onClick="{{ prev }}" aria-label="Précédent" style="font-family:'Silkscreen',monospace;font-size:20px;color:#e9d9b3;width:52px;height:52px;background:rgba(10,8,7,.6);border:1px solid rgba(227,181,82,.55);cursor:pointer;" style-hover="background:#e3b552;color:#0a0807;">‹</button>
+      <div style="font-family:'Silkscreen',monospace;font-size:10px;letter-spacing:.22em;color:#c9a85f;animation:hintPulse 2.6s ease-in-out infinite;">‹ GLISSER ›</div>
+      <button onClick="{{ next }}" aria-label="Suivant" style="font-family:'Silkscreen',monospace;font-size:20px;color:#e9d9b3;width:52px;height:52px;background:rgba(10,8,7,.6);border:1px solid rgba(227,181,82,.55);cursor:pointer;" style-hover="background:#e3b552;color:#0a0807;">›</button>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- INFOS PRATIQUES — décor comptoir                              -->
+  <!-- ============================================================ -->
+  <section ref="{{ infosRef }}" data-screen-label="Infos pratiques" style="position:relative;overflow:hidden;padding:84px 22px 70px;">
+    <div ref="{{ infosBg }}" style="position:absolute;inset:-9% 0;background:url(assets/decor-comptoir.png) center/cover no-repeat;will-change:transform;"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,8,7,.96),rgba(10,8,7,.8) 45%,rgba(10,8,7,.97));"></div>
+
+    <div style="position:relative;z-index:3;max-width:880px;margin:0 auto;text-align:center;">
+      <div style="font-family:'Silkscreen',monospace;font-size:10px;letter-spacing:.4em;color:#c9a85f;padding-left:.4em;">— OÙ NOUS TROUVER —</div>
+      <h2 style="margin:10px 0 6px;font-family:'Silkscreen',monospace;font-weight:700;font-size:clamp(22px,5.5vw,40px);letter-spacing:.04em;background:linear-gradient(180deg,#f6dd92,#d8a73e 55%,#9c6f1e);-webkit-background-clip:text;background-clip:text;color:transparent;">LE SHELBY</h2>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-top:34px;text-align:left;">
+        <div style="border:1px solid rgba(227,181,82,.3);background:rgba(14,11,7,.55);padding:20px;">
+          <div style="font-family:'Silkscreen',monospace;font-size:11px;letter-spacing:.14em;color:#e3b552;margin-bottom:10px;">▸ ADRESSE</div>
+          <div style="font-size:19px;line-height:1.4;color:#d8c4a0;">3a rue Berthe Molly<br/>68000 Colmar</div>
+        </div>
+        <div style="border:1px solid rgba(227,181,82,.3);background:rgba(14,11,7,.55);padding:20px;">
+          <div style="font-family:'Silkscreen',monospace;font-size:11px;letter-spacing:.14em;color:#e3b552;margin-bottom:10px;">▸ HORAIRES</div>
+          <div style="font-size:19px;line-height:1.4;color:#d8c4a0;">Mar — Dim · 17h00 → 01h30<br/><span style="color:#a78f63;">Fermé le lundi</span></div>
+        </div>
+        <div style="border:1px solid rgba(227,181,82,.3);background:rgba(14,11,7,.55);padding:20px;">
+          <div style="font-family:'Silkscreen',monospace;font-size:11px;letter-spacing:.14em;color:#e3b552;margin-bottom:10px;">▸ RÉSERVATION</div>
+          <div style="font-size:19px;line-height:1.4;color:#d8c4a0;">03 68 25 20 25<br/><span style="color:#a78f63;">Par téléphone uniquement</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top:22px;display:flex;flex-wrap:wrap;gap:10px 26px;justify-content:center;font-size:17px;color:#a78f63;">
+        <span>★ Google 4,6 / 5</span>
+        <span>•</span>
+        <span>Fondé par trois amis, anciens militaires</span>
+        <span>•</span>
+        <span>Établissement non accessible PMR</span>
+      </div>
+
+      <button onClick="{{ reserve }}" style="margin-top:30px;font-family:'Silkscreen',monospace;font-size:13px;letter-spacing:.16em;color:#0a0807;background:linear-gradient(180deg,#f0cd76,#d8a73e);border:1px solid #f0cd76;padding:17px 30px;cursor:pointer;min-height:48px;filter:drop-shadow(0 6px 20px rgba(227,181,82,.25));" style-hover="background:#f6dd92;">☎ RÉSERVER · 03 68 25 20 25</button>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- FOOTER                                                        -->
+  <!-- ============================================================ -->
+  <footer style="position:relative;z-index:3;background:#070605;border-top:1px solid rgba(227,181,82,.2);padding:34px 22px;text-align:center;">
+    <svg viewBox="0 0 120 64" width="48" height="26" style="margin:0 auto 6px;opacity:.9;"><ellipse cx="60" cy="50" rx="52" ry="9" fill="none" stroke="#c9a85f" stroke-width="3"/><path d="M30 50 Q30 16 60 16 Q90 16 90 50" fill="none" stroke="#c9a85f" stroke-width="3"/><line x1="32" y1="44" x2="88" y2="44" stroke="#c9a85f" stroke-width="3"/></svg>
+    <div style="font-family:'Silkscreen',monospace;font-size:15px;letter-spacing:.16em;color:#d8b969;">LE SHELBY</div>
+    <div style="margin-top:8px;font-size:16px;color:#8a7551;line-height:1.5;">3a rue Berthe Molly, 68000 Colmar · 03 68 25 20 25<br/>Mar–Dim 17h00–01h30 · à consommer avec modération</div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:&quot;100%&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    // Cocktails — visuels dans le bon verre (slots nommés & remplaçables)
+    this.cocktails = [
+      { img:'assets/cocktail-old-fashioned.png', name:'THE SHELBY OLD FASHIONED', ingredients:'Bourbon, sucre brun, bitters, orange fumée', price:'12€' },
+      { img:'assets/cocktail-peaky-sour.png',    name:'PEAKY SOUR',      ingredients:'Whisky, citron, sucre, blanc d\u2019\u0153uf', price:'11€' },
+      { img:'assets/cocktail-prohibition-gin.png',name:'PROHIBITION GIN', ingredients:'Gin, concombre, basilic, citron vert', price:'11€' },
+      { img:'assets/cocktail-colmar-negroni.png',name:'COLMAR NEGRONI',  ingredients:'Gin, vermouth rouge, Campari, zeste d\u2019orange', price:'12€' },
+      { img:'assets/cocktail-shelby-smoke.png',  name:'SHELBY SMOKE',    ingredients:'Whisky, sirop d\u2019érable, fumée, angostura', price:'13€' },
+      { img:'assets/cocktail-lady-shelby.png',   name:'LADY SHELBY',     ingredients:'Rhum, framboise, vanille, citron', price:'11€' },
+    ];
+    // intro : jouée UNE fois / session, jamais sous reduced-motion
+    let intro = 'play';
+    try {
+      const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const seen = sessionStorage.getItem('shelby_intro_seen');
+      if (reduced || seen) intro = 'done';
+    } catch(e){}
+    this.state = { intro, cover: 0 };
+    this.heroBg = React.createRef();
+    this.carteBg = React.createRef();
+    this.infosBg = React.createRef();
+    this.carteRef = React.createRef();
+    this.infosRef = React.createRef();
+    this.touchX = null;
+    this._reduced = false;
+  }
+
+  componentDidMount(){
+    try { this._reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
+    if (this.state.intro === 'play'){
+      try { sessionStorage.setItem('shelby_intro_seen','1'); } catch(e){}
+      this._t1 = setTimeout(()=>this.setState({intro:'fading'}), 5000);
+      this._t2 = setTimeout(()=>this.setState({intro:'done'}), 5680);
+    }
+    if (!this._reduced){
+      this._onScroll = ()=>this.parallax();
+      window.addEventListener('scroll', this._onScroll, {passive:true});
+      this.parallax();
+    }
+    this._onKey = (e)=>{ if(e.key==='ArrowRight') this.next(); else if(e.key==='ArrowLeft') this.prev(); };
+    window.addEventListener('keydown', this._onKey);
+  }
+  componentWillUnmount(){
+    clearTimeout(this._t1); clearTimeout(this._t2);
+    if (this._onScroll) window.removeEventListener('scroll', this._onScroll);
+    window.removeEventListener('keydown', this._onKey);
+  }
+
+  // parallaxe légère (transform uniquement)
+  parallax(){
+    const y = window.scrollY || 0;
+    if (this.heroBg.current) this.heroBg.current.style.transform = 'translate3d(0,'+(y*0.16)+'px,0) scale(1.16)';
+    if (this.carteBg.current){ const t = this.carteBg.current.parentElement.getBoundingClientRect().top; this.carteBg.current.style.transform = 'translate3d(0,'+(t*-0.07)+'px,0) scale(1.2)'; }
+    if (this.infosBg.current){ const t = this.infosBg.current.parentElement.getBoundingClientRect().top; this.infosBg.current.style.transform = 'translate3d(0,'+(t*-0.05)+'px,0) scale(1.2)'; }
+  }
+
+  skip(){
+    clearTimeout(this._t1); clearTimeout(this._t2);
+    try { sessionStorage.setItem('shelby_intro_seen','1'); } catch(e){}
+    this.setState({intro:'fading'});
+    setTimeout(()=>this.setState({intro:'done'}), 620);
+  }
+  next(){ this.setState(s=>({cover: Math.min(s.cover+1, this.cocktails.length-1)})); }
+  prev(){ this.setState(s=>({cover: Math.max(s.cover-1, 0)})); }
+  goCover(i){ this.setState({cover:i}); }
+  scrollTo(ref){
+    const el = ref.current; if(!el) return;
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top, behavior: this._reduced ? 'auto' : 'smooth' });
+  }
+  reserve(){ window.location.href = 'tel:+33368252025'; }
+  onTouchStart(e){ this.touchX = e.touches[0].clientX; }
+  onTouchEnd(e){
+    if (this.touchX == null) return;
+    const dx = e.changedTouches[0].clientX - this.touchX;
+    if (dx < -42) this.next(); else if (dx > 42) this.prev();
+    this.touchX = null;
+  }
+
+  renderVals(){
+    const cover = this.state.cover;
+    const cards = this.cocktails.map((c,i)=>{
+      const off = i - cover; const a = Math.abs(off);
+      let tx, sc, ry, op, z, br;
+      if (a===0){ tx=0; sc=1; ry=0; op=1; z=30; br=1; }
+      else if (a===1){ tx=off*58; sc=.82; ry=off>0?-30:30; op=.9; z=20; br=.66; }
+      else if (a===2){ tx=off*102; sc=.66; ry=off>0?-38:38; op=.42; z=10; br=.46; }
+      else { tx=off*150; sc=.52; ry=0; op=0; z=1; br=.3; }
+      const style = {
+        position:'absolute', left:'50%', top:'50%',
+        transform:'translate(-50%,-50%) translateX('+tx+'%) scale('+sc+') rotateY('+ry+'deg)',
+        opacity:op, zIndex:z, filter:'brightness('+br+')',
+        transition:'transform .55s cubic-bezier(.22,.61,.36,1), opacity .5s ease, filter .5s ease',
+        pointerEvents: a>2 ? 'none' : 'auto',
+        cursor: a===0 ? 'default' : 'pointer',
+        transformStyle:'preserve-3d'
+      };
+      return { img:c.img, name:c.name, ingredients:c.ingredients, price:c.price, style, onClick:()=>this.goCover(i) };
+    });
+    const intro = this.state.intro;
+    return {
+      introActive: intro !== 'done',
+      introOpacity: intro === 'fading' ? 0 : 1,
+      cards,
+      skip: ()=>this.skip(),
+      next: ()=>this.next(),
+      prev: ()=>this.prev(),
+      reserve: ()=>this.reserve(),
+      toCarte: ()=>this.scrollTo(this.carteRef),
+      toInfos: ()=>this.scrollTo(this.infosRef),
+      heroBg: this.heroBg, carteBg: this.carteBg, infosBg: this.infosBg,
+      carteRef: this.carteRef, infosRef: this.infosRef,
+      onTouchStart: (e)=>this.onTouchStart(e),
+      onTouchEnd: (e)=>this.onTouchEnd(e),
+    };
+  }
+}
+</script>
+</body>
+</html>

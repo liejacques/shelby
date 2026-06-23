@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Remplacer le domaine ci-dessous par l'URL finale (cf. `site` dans astro.config.mjs).
+Sitemap: https://leshelby-colmar.fr/sitemap.xml

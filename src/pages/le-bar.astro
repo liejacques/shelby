@@ -1,0 +1,114 @@
+---
+/**
+ * LE BAR / NOTRE HISTOIRE — récit speakeasy (décor salle/ruelle en fond).
+ * Faits réels uniquement (mission) : trois fondateurs anciens militaires, Colmar.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import AmbianceBand from '../components/AmbianceBand.astro';
+import { site } from '../data/site';
+---
+<BaseLayout
+  title="Le bar — Notre histoire · Le Shelby Colmar"
+  description="Derrière une porte discrète de Colmar, un bar clandestin inspiré des speakeasies de la Prohibition. Fondé par trois amis, anciens militaires."
+>
+  <section class="bar-hero">
+    <div class="bar-hero-bg" aria-hidden="true"></div>
+    <div class="bar-hero-overlay" aria-hidden="true"></div>
+    <div class="wrap bar-hero-content">
+      <PageHeader kicker="Le bar" title="UN LIEU HORS DU TEMPS" subtitle="Derrière une porte discrète, un bar clandestin où le temps s'arrête." />
+    </div>
+  </section>
+
+  <section class="story">
+    <div class="wrap story-wrap">
+      <div class="story-text">
+        <p class="story-lede">Poussez la bonne porte, rue Berthe Molly, et la ville s'efface. Le
+          Shelby est un bar caché, pensé comme un speakeasy de la Prohibition : lumières basses,
+          cuivres patinés, velours sombre et confidences à voix basse.</p>
+
+        <p>Chaque détail a été choisi pour vous faire voyager dans les années 1920 — l'époque où
+          l'on buvait à l'abri des regards, où une poignée de main valait un contrat et où la nuit
+          appartenait à ceux qui savaient se tenir.</p>
+
+        <blockquote class="story-quote">
+          « Le Shelby n'est pas qu'un bar. C'est une histoire qui se boit à voix basse. »
+        </blockquote>
+
+        <p>Le lieu a été imaginé par <strong>trois amis, anciens militaires</strong>, qui ont voulu
+          recréer l'esprit de fraternité et de discrétion qui les liait. Derrière le comptoir, on
+          prend le temps : un cocktail s'y compose comme on raconte une histoire, lentement, avec
+          ce qu'il faut de fumée et de mystère.</p>
+
+        <p class="story-faint">Aujourd'hui, le Shelby vous accueille du mardi au dimanche, dès 17h.
+          La maison est appréciée pour son atmosphère — {site.rating} sur Google — et reste fidèle
+          à sa promesse : une parenthèse hors du temps, au cœur de Colmar.</p>
+
+        <div class="story-actions">
+          <a href="/carte/" class="btn btn-gold story-btn">DÉCOUVRIR LA CARTE</a>
+          <a href="/reservation/" class="btn btn-ghost story-btn">RÉSERVER UNE TABLE</a>
+        </div>
+      </div>
+
+      <figure class="story-figure">
+        <img src="/assets/decor-comptoir.png" alt="Le comptoir du Shelby, bouteilles en contre-jour" width="520" height="640" loading="lazy" decoding="async" />
+        <figcaption>Le comptoir — cœur battant du Shelby.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <AmbianceBand image="/assets/decor-ruelle.png" position="center 40%" side="left" />
+</BaseLayout>
+
+<style>
+  .bar-hero { position: relative; overflow: hidden; padding: 56px 22px 40px; }
+  .bar-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: url(/assets/decor-salle.png) center / cover no-repeat;
+    transform: scale(1.05);
+  }
+  .bar-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10,8,7,.8), rgba(10,8,7,.72) 45%, var(--bg));
+  }
+  .bar-hero-content { position: relative; z-index: 2; }
+
+  .story { padding: 12px 22px 64px; }
+  .story-wrap { display: grid; grid-template-columns: 1fr; gap: 30px; align-items: start; }
+  .story-text { font-size: clamp(17px, 2.6vw, 19px); line-height: 1.6; color: var(--cream-deep); }
+  .story-text p { margin: 0 0 18px; }
+  .story-lede { color: var(--cream); font-size: clamp(18px, 3vw, 21px); }
+  .story-text strong { color: var(--gold-200); font-weight: 400; }
+  .story-quote {
+    margin: 26px 0;
+    padding: 4px 0 4px 18px;
+    border-left: 2px solid var(--gold-400);
+    font-size: clamp(19px, 3.2vw, 23px);
+    line-height: 1.4;
+    color: var(--muted-1);
+  }
+  .story-faint { color: var(--muted-3); }
+  .story-actions { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 14px; }
+  .story-btn { font-size: 12px; padding: 15px 24px; min-height: 48px; letter-spacing: .16em; }
+
+  .story-figure {
+    margin: 0;
+    border: 1px solid rgba(227,181,82,.24);
+    overflow: hidden;
+    background: var(--bg-card-deep);
+  }
+  .story-figure img { width: 100%; height: clamp(260px, 70vw, 460px); object-fit: cover; }
+  .story-figure figcaption {
+    padding: 12px 14px;
+    font-size: 15px;
+    color: var(--muted-3);
+    border-top: 1px solid rgba(227,181,82,.14);
+  }
+
+  @media (min-width: 820px) {
+    .story-wrap { grid-template-columns: 1.2fr .8fr; gap: 44px; }
+    .story-figure { position: sticky; top: calc(var(--header-h) + 16px); }
+  }
+</style>

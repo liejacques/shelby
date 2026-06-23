@@ -1,0 +1,112 @@
+---
+/**
+ * Layout de base — <head> SEO par page + chrome partagé (Header, MenuOverlay,
+ * Footer) + script global (menu / parallaxe / smooth-scroll).
+ * L'intro cinématique a été abandonnée → plus d'anti-FOUC, hero fixe.
+ */
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import MenuOverlay from '../components/MenuOverlay.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** 'transparent' sur l'accueil (posé sur le hero), 'solid' ailleurs */
+  headerVariant?: 'transparent' | 'solid';
+  /** image OG spécifique (défaut : og-image.png) */
+  ogImage?: string;
+  /** injecte le JSON-LD LocalBusiness (accueil / contact) */
+  jsonLd?: boolean;
+}
+
+const {
+  title = 'Le Shelby — Bar à cocktails caché · Colmar',
+  description =
+    'Le Shelby, speakeasy à Colmar : cocktails d’auteur dans une ambiance Prohibition feutrée. ' +
+    '3a rue Berthe Molly, 68000 Colmar. Réservation par téléphone au 03 68 25 20 25.',
+  headerVariant = 'solid',
+  ogImage = '/og-image.png',
+  jsonLd = false,
+} = Astro.props;
+
+const siteUrl = Astro.site ?? new URL('https://leshelby-colmar.fr');
+const ogImageUrl = new URL(ogImage, siteUrl).href;
+const canonical = new URL(Astro.url.pathname, siteUrl).href;
+const mainClass = headerVariant === 'solid' ? 'has-fixed-header' : '';
+
+const localBusiness = {
+  '@context': 'https://schema.org',
+  '@type': 'BarOrPub',
+  name: site.name,
+  description,
+  url: siteUrl.href,
+  image: ogImageUrl,
+  telephone: '+33368252025',
+  priceRange: '€€',
+  servesCuisine: 'Cocktails',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    postalCode: site.address.zip,
+    addressLocality: site.address.city,
+    addressCountry: 'FR',
+  },
+  openingHoursSpecification: {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    opens: '17:00',
+    closes: '01:30',
+  },
+};
+---
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0807" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Open Graph / réseaux sociaux -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="Le Shelby" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- Polices critiques auto-hébergées (RGPD : aucun CDN) -->
+    <link rel="preload" href="/fonts/vt323-latin-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/silkscreen-latin-700.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/silkscreen-latin-400.woff2" as="font" type="font/woff2" crossorigin />
+
+    {jsonLd && (
+      <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+    )}
+  </head>
+  <body class="site-grain">
+    <a href="#main" class="skip-link">Aller au contenu</a>
+    <Header variant={headerVariant} />
+    <MenuOverlay activePath={Astro.url.pathname} />
+
+    <main id="main" tabindex="-1" class={mainClass}>
+      <slot />
+    </main>
+
+    <Footer />
+
+    <script>
+      import '../scripts/site';
+    </script>
+  </body>
+</html>

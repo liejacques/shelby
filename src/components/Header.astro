@@ -1,0 +1,110 @@
+---
+/**
+ * Barre fixe — logo (→ accueil) + bouton burger qui pilote le MenuOverlay.
+ * `variant` :
+ *   - 'transparent' (accueil, posée sur le hero) : fond dégradé léger pour lisibilité
+ *   - 'solid' (pages internes) : fond sombre + filet or en bas
+ * Le câblage (ouvrir/fermer, focus-trap, Esc) est dans scripts/site.ts.
+ */
+import Logo from './Logo.astro';
+import { site } from '../data/site';
+
+interface Props {
+  variant?: 'transparent' | 'solid';
+}
+const { variant = 'solid' } = Astro.props;
+---
+<header class={`site-header ${variant}`}>
+  <a href="/" class="brand" aria-label={`${site.name} — accueil`}>
+    <Logo width={42} height={23} stroke="#e3b552" fill="none" glow={false} class="brand-mark" />
+    <span class="brand-word">LE SHELBY</span>
+  </a>
+
+  <button
+    id="menu-toggle"
+    class="burger"
+    type="button"
+    aria-label="Ouvrir le menu"
+    aria-haspopup="dialog"
+    aria-expanded="false"
+    aria-controls="site-menu"
+  >
+    <span class="burger-box" aria-hidden="true">
+      <span class="burger-bar"></span>
+      <span class="burger-bar"></span>
+      <span class="burger-bar"></span>
+    </span>
+    <span class="burger-label">MENU</span>
+  </button>
+</header>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: var(--z-header);
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 clamp(14px, 4vw, 26px);
+  }
+  /* posée sur le hero : un voile sombre du haut suffit à la lisibilité */
+  .site-header.transparent {
+    background: linear-gradient(180deg, rgba(7, 6, 5, .72), rgba(7, 6, 5, 0));
+  }
+  .site-header.solid {
+    background: rgba(7, 6, 5, .92);
+    border-bottom: 1px solid rgba(227, 181, 82, .22);
+    backdrop-filter: blur(6px);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    min-height: 44px;
+  }
+  .brand-mark { opacity: .95; }
+  .brand-word {
+    font-family: var(--font-display);
+    font-size: clamp(13px, 3.4vw, 16px);
+    letter-spacing: .18em;
+    color: var(--gold-warm);
+  }
+
+  .burger {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 6px 8px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--cream);
+  }
+  .burger-box {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 26px;
+  }
+  .burger-bar {
+    height: 2px;
+    width: 100%;
+    background: var(--gold-300);
+    transition: background .2s ease;
+  }
+  .burger-bar:nth-child(2) { width: 72%; align-self: flex-end; }
+  .burger-label {
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: .26em;
+    color: var(--gold-soft);
+  }
+  .burger:hover .burger-bar,
+  .burger:focus-visible .burger-bar { background: var(--gold-200); }
+</style>

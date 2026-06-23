@@ -1,0 +1,141 @@
+---
+/**
+ * Vue LISTE de la carte — filtres (Tous / Classiques / Signatures) + lignes
+ * (vignette, nom, ingrédients, prix, chevron → fiche). Filtrage client dans
+ * carte/index.astro (sans JS : toutes les lignes restent visibles).
+ */
+import { cocktails, cocktailFilters } from '../data/cocktails';
+import CocktailVisual from './CocktailVisual.astro';
+---
+<section id="liste" class="liste" aria-labelledby="liste-h">
+  <div class="wrap">
+    <header class="liste-head">
+      <div class="liste-kicker">— CARTE COMPLÈTE —</div>
+      <h2 id="liste-h" class="liste-title gold-clip">TOUS NOS COCKTAILS</h2>
+    </header>
+
+    <div class="filters" id="cocktail-filters" role="group" aria-label="Filtrer les cocktails">
+      {cocktailFilters.map((f, i) => (
+        <button type="button" class="filter-btn" data-filter={f} aria-pressed={i === 0 ? 'true' : 'false'}>{f}</button>
+      ))}
+    </div>
+
+    <ul class="rows" id="cocktail-rows">
+      {cocktails.map((c) => (
+        <li class="row" data-category={c.category}>
+          <a href={`/carte/${c.slug}/`} class="row-link">
+            <span class="row-thumb"><CocktailVisual cocktail={c} class="cv-contain" /></span>
+            <span class="row-main">
+              <span class="row-name">{c.name}</span>
+              <span class="row-ing">{c.ingredients}</span>
+              <span class="row-cat">{c.category}</span>
+            </span>
+            <span class="row-price">{c.price}</span>
+            <span class="row-chevron" aria-hidden="true">›</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .liste { padding: 76px 22px 84px; border-top: 1px solid rgba(227, 181, 82, .14); }
+  .liste-head { text-align: center; margin-bottom: 26px; }
+  .liste-kicker {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: .4em;
+    color: var(--gold-soft);
+    padding-left: .4em;
+  }
+  .liste-title {
+    margin: 10px 0 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(22px, 5.5vw, 38px);
+    letter-spacing: .04em;
+  }
+
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 26px;
+  }
+  .filter-btn {
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: .14em;
+    color: var(--cream);
+    background: rgba(10, 8, 7, .5);
+    border: 1px solid rgba(227, 181, 82, .4);
+    padding: 11px 18px;
+    min-height: 44px;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .filter-btn:hover,
+  .filter-btn:focus-visible { border-color: var(--gold-300); color: var(--gold-200); }
+  .filter-btn[aria-pressed='true'] {
+    background: var(--grad-button);
+    color: var(--bg);
+    border-color: var(--gold-300);
+  }
+
+  .rows { list-style: none; margin: 0 auto; padding: 0; max-width: 720px; }
+  .row { border-top: 1px solid rgba(227, 181, 82, .14); }
+  .row:last-child { border-bottom: 1px solid rgba(227, 181, 82, .14); }
+  .row.is-hidden { display: none; }
+
+  .row-link {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 4px;
+    text-decoration: none;
+    color: var(--cream);
+    transition: background .2s ease;
+  }
+  .row-link:hover,
+  .row-link:focus-visible { background: rgba(227, 181, 82, .06); }
+  .row-thumb {
+    width: 64px;
+    height: 64px;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    background: var(--bg-card-deep);
+    border: 1px solid rgba(227, 181, 82, .25);
+  }
+  .row-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .row-name {
+    font-family: var(--font-display);
+    font-size: clamp(11px, 2.7vw, 13px);
+    letter-spacing: .02em;
+    line-height: 1.4;
+    color: var(--gold-300);
+  }
+  .row-ing { font-size: 16px; line-height: 1.25; color: var(--muted-2); }
+  .row-cat {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: .16em;
+    color: var(--gold-soft);
+    text-transform: uppercase;
+  }
+  .row-price {
+    font-family: var(--font-display);
+    font-size: clamp(16px, 3.4vw, 20px);
+    color: var(--gold-400);
+  }
+  .row-chevron { font-size: 22px; color: var(--gold-soft); }
+
+  @media (min-width: 560px) {
+    .row-thumb { width: 76px; height: 76px; }
+  }
+</style>

@@ -1,0 +1,92 @@
+---
+/**
+ * POLITIQUE DE CONFIDENTIALITÉ — page réelle, reflétant FIDÈLEMENT le build :
+ * site statique, aucune collecte, aucun cookie, polices auto-hébergées, pas
+ * d'embed de carte (lien d'itinéraire ouvert au clic uniquement).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { site } from '../data/site';
+---
+<BaseLayout
+  title="Politique de confidentialité — Le Shelby · Colmar"
+  description="Politique de confidentialité du site Le Shelby : site statique sans collecte de données, sans cookie ni traceur."
+>
+  <div class="legal">
+    <div class="wrap legal-wrap">
+      <PageHeader kicker="Vie privée" title="POLITIQUE DE CONFIDENTIALITÉ" />
+
+      <p class="legal-intro">Le Shelby attache de l'importance à votre vie privée. Ce site a été
+        conçu pour être respectueux par défaut : il n'y a tout simplement rien à collecter.</p>
+
+      <section class="legal-block">
+        <h2>Aucune collecte de données</h2>
+        <p>Ce site est un site vitrine <strong>statique</strong>. Il ne comporte aucun formulaire,
+          aucun compte, aucun espace de réservation en ligne. Aucune donnée personnelle n'est
+          collectée, stockée ni transmise lors de votre visite.</p>
+      </section>
+
+      <section class="legal-block">
+        <h2>Aucun cookie, aucun traceur</h2>
+        <p>Le site ne dépose aucun cookie et n'utilise aucun outil de mesure d'audience
+          (pas de Google Analytics ni équivalent). Aucun profilage publicitaire n'est réalisé.</p>
+      </section>
+
+      <section class="legal-block">
+        <h2>Polices et ressources</h2>
+        <p>Les polices d'écriture sont <strong>hébergées localement</strong> sur le site : aucune
+          requête n'est envoyée à un service tiers (pas de Google Fonts distant). Les images sont
+          servies depuis le site lui-même.</p>
+      </section>
+
+      <section class="legal-block">
+        <h2>Localisation & itinéraire</h2>
+        <p>La page contact affiche un plan <strong>stylisé, dessiné sur le site</strong> : aucune
+          carte tierce n'est chargée automatiquement. Le bouton « Itinéraire » ouvre Google Maps
+          dans un nouvel onglet <strong>seulement si vous cliquez dessus</strong> ; vous êtes alors
+          soumis à la politique de confidentialité de Google.</p>
+      </section>
+
+      <section class="legal-block">
+        <h2>Liens externes</h2>
+        <p>Le site peut contenir des liens vers des services externes (téléphone, itinéraire,
+          éventuels réseaux sociaux). Une fois ces liens suivis, les pratiques de confidentialité
+          des services concernés s'appliquent.</p>
+      </section>
+
+      <section class="legal-block">
+        <h2>Vos droits & contact</h2>
+        <p>Aucune donnée n'étant collectée par ce site, il n'y a pas de traitement à exercer.
+          Pour toute question, vous pouvez nous joindre par téléphone au
+          <a href={site.phoneHref}>{site.phoneDisplay}</a>.</p>
+      </section>
+
+      <p class="legal-back"><a href="/">‹ Retour à l'accueil</a></p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .legal { padding: 40px 22px 76px; }
+  .legal-wrap { max-width: 760px; }
+  .legal-intro {
+    margin: -6px 0 26px;
+    font-size: clamp(18px, 2.8vw, 20px);
+    line-height: 1.55;
+    color: var(--cream);
+  }
+  .legal-block { margin-bottom: 26px; }
+  .legal-block h2 {
+    font-family: var(--font-display);
+    font-size: clamp(13px, 3.2vw, 16px);
+    letter-spacing: .06em;
+    color: var(--gold-300);
+    margin: 0 0 10px;
+  }
+  .legal-block p { font-size: 17px; line-height: 1.6; color: var(--cream-deep); }
+  .legal-block strong { color: var(--gold-200); font-weight: 400; }
+  .legal-block a { color: var(--gold-200); }
+  .legal-back { margin-top: 30px; font-family: var(--font-display); font-size: 12px; letter-spacing: .12em; }
+  .legal-back a { color: var(--gold-soft); text-decoration: none; }
+  .legal-back a:hover, .legal-back a:focus-visible { color: var(--gold-200); }
+</style>

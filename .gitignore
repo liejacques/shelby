@@ -1,0 +1,22 @@
+# build output
+dist/
+.output/
+
+# dependencies
+node_modules/
+
+# astro
+.astro/
+
+# rendus temporaires de la planche DA (générés localement)
+_da/
+
+# sauvegardes locales (photos cocktails d'origine remplacées)
+public/assets/_photos-originales/
+
+# logs & env
+*.log
+.env
+.env.production
+.DS_Store
+Thumbs.db

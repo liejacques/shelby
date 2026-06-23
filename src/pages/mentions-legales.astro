@@ -1,0 +1,111 @@
+---
+/**
+ * MENTIONS LÉGALES — page réelle. Les données connues (nom, adresse, tél) sont
+ * remplies ; les champs propres à l'exploitant (forme juridique, SIRET, directeur
+ * de publication, hébergeur retenu) sont marqués « à compléter » — à NE PAS
+ * inventer. L'exploitant les renseigne avant mise en ligne.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { site } from '../data/site';
+---
+<BaseLayout
+  title="Mentions légales — Le Shelby · Colmar"
+  description="Mentions légales du site du bar Le Shelby, 3a rue Berthe Molly, 68000 Colmar."
+>
+  <div class="legal">
+    <div class="wrap legal-wrap">
+      <PageHeader kicker="Informations légales" title="MENTIONS LÉGALES" />
+
+      <p class="legal-todo">Les champs notés <em>[à compléter]</em> doivent être renseignés par
+        l'exploitant avant la mise en ligne (informations propres à l'établissement).</p>
+
+      <section class="legal-block">
+        <h2>Éditeur du site</h2>
+        <p>
+          {site.name}<br />
+          {site.addressLine}<br />
+          Téléphone : <a href={site.phoneHref}>{site.phoneDisplay}</a>
+        </p>
+        <p>
+          Forme juridique : <em>[à compléter]</em><br />
+          Capital social : <em>[à compléter]</em><br />
+          SIRET : <em>[à compléter]</em> · RCS / RM : <em>[à compléter]</em><br />
+          N° TVA intracommunautaire : <em>[à compléter]</em>
+        </p>
+      </section>
+
+      <section class="legal-block">
+        <h2>Directeur de la publication</h2>
+        <p><em>[à compléter — nom du responsable légal]</em></p>
+      </section>
+
+      <section class="legal-block">
+        <h2>Hébergeur</h2>
+        <p>Le site est hébergé en tant que site statique. Selon l'hébergement retenu :</p>
+        <ul>
+          <li>GitLab Pages — GitLab B.V., Amsterdam, Pays-Bas — <span class="legal-faint">about.gitlab.com</span></li>
+          <li>ou Vercel Inc. — 340 S Lemon Ave #4133, Walnut, CA 91789, USA — <span class="legal-faint">vercel.com</span></li>
+        </ul>
+        <p class="legal-faint">Conserver uniquement l'hébergeur effectivement utilisé.</p>
+      </section>
+
+      <section class="legal-block">
+        <h2>Propriété intellectuelle</h2>
+        <p>L'ensemble des contenus de ce site (textes, identité visuelle, illustrations,
+          photographies) est protégé. Toute reproduction, représentation ou diffusion, totale ou
+          partielle, sans autorisation écrite préalable de l'éditeur est interdite.</p>
+      </section>
+
+      <section class="legal-block">
+        <h2>Données personnelles & cookies</h2>
+        <p>Ce site vitrine statique ne collecte aucune donnée personnelle et ne dépose aucun cookie.
+          Aucun formulaire, aucun outil de mesure d'audience et aucun service tiers de suivi n'y est
+          intégré. Pour le détail, voir la
+          <a href="/confidentialite/">politique de confidentialité</a>.</p>
+      </section>
+
+      <section class="legal-block">
+        <h2>Responsabilité</h2>
+        <p>L'éditeur s'efforce d'assurer l'exactitude des informations diffusées (horaires, carte,
+          tarifs), qui peuvent toutefois évoluer. Les informations sont données à titre indicatif et
+          ne sauraient engager la responsabilité de l'éditeur.</p>
+      </section>
+
+      <p class="legal-back"><a href="/">‹ Retour à l'accueil</a></p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .legal { padding: 40px 22px 76px; }
+  .legal-wrap { max-width: 760px; }
+  .legal-todo {
+    margin: -8px 0 28px;
+    padding: 14px 16px;
+    border: 1px dashed rgba(227, 181, 82, .4);
+    background: rgba(227, 181, 82, .05);
+    font-size: 15px;
+    color: var(--muted-2);
+  }
+  .legal-todo em, .legal em { color: var(--gold-soft); font-style: italic; }
+  .legal-block { margin-bottom: 26px; }
+  .legal-block h2 {
+    font-family: var(--font-display);
+    font-size: clamp(13px, 3.2vw, 16px);
+    letter-spacing: .06em;
+    color: var(--gold-300);
+    margin: 0 0 10px;
+  }
+  .legal-block p, .legal-block li {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--cream-deep);
+  }
+  .legal-block ul { margin: 0; padding-left: 20px; }
+  .legal-block a { color: var(--gold-200); }
+  .legal-faint { color: var(--muted-3); }
+  .legal-back { margin-top: 30px; font-family: var(--font-display); font-size: 12px; letter-spacing: .12em; }
+  .legal-back a { color: var(--gold-soft); text-decoration: none; }
+  .legal-back a:hover, .legal-back a:focus-visible { color: var(--gold-200); }
+</style>

@@ -1,0 +1,43 @@
+---
+/**
+ * En-tête de page interne — kicker + titre or (h1) + sous-titre optionnel.
+ * Réutilisé sur toutes les pages secondaires pour une DA homogène.
+ */
+interface Props {
+  kicker?: string;
+  title: string;
+  subtitle?: string;
+}
+const { kicker, title, subtitle } = Astro.props;
+---
+<header class="page-header">
+  {kicker && <div class="ph-kicker">— {kicker} —</div>}
+  <h1 class="ph-title gold-clip">{title}</h1>
+  {subtitle && <p class="ph-sub">{subtitle}</p>}
+</header>
+
+<style>
+  .page-header { text-align: center; margin-bottom: 30px; }
+  .ph-kicker {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: .4em;
+    color: var(--gold-soft);
+    padding-left: .4em;
+  }
+  .ph-title {
+    margin: 12px 0 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(26px, 7vw, 46px);
+    letter-spacing: .04em;
+    line-height: 1.05;
+  }
+  .ph-sub {
+    margin: 16px auto 0;
+    max-width: 560px;
+    font-size: clamp(17px, 2.6vw, 20px);
+    line-height: 1.45;
+    color: var(--muted-1);
+  }
+</style>

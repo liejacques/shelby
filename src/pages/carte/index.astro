@@ -1,0 +1,143 @@
+---
+/**
+ * NOS COCKTAILS — « le comptoir » (verres posés sur le bar) + vue LISTE filtrable.
+ * Script page-local : défilé des verres (flèches/clavier/swipe/points + clic verre
+ * central → fiche), cartouche qui se met à jour, et filtres de la liste.
+ * Le smooth-scroll « voir la carte complète » est global.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Coverflow from '../../components/Coverflow.astro';
+import CocktailList from '../../components/CocktailList.astro';
+---
+<BaseLayout
+  title="Nos cocktails — Le Shelby · Colmar"
+  description="La carte du Shelby : six cocktails d'auteur, classiques relus et signatures maison. The Shelby Old Fashioned, Peaky Sour, Prohibition Gin, Colmar Negroni, Shelby Smoke, Lady Shelby."
+>
+  <Coverflow />
+  <CocktailList />
+</BaseLayout>
+
+<script>
+  import { coverState } from '../../lib/coverflow';
+
+  const reduced =
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ============================ LE COMPTOIR ============================ */
+  (function initBar() {
+    const stage = document.getElementById('coverflow');
+    if (!stage) return;
+    const cards = Array.from(stage.querySelectorAll<HTMLElement>('.cf-card'));
+    const n = cards.length;
+    if (!n) return;
+
+    const dots = Array.from(document.querySelectorAll<HTMLButtonElement>('#cf-dots .cf-dot'));
+    const info = document.getElementById('bar-info');
+    const nameEl = document.getElementById('bi-name');
+    const ingEl = document.getElementById('bi-ing');
+    const priceEl = document.getElementById('bi-price');
+    const linkEl = document.getElementById('bi-link') as HTMLAnchorElement | null;
+
+    let cover = 0;
+    let swapTimer = 0;
+    const clamp = (v: number) => Math.max(0, Math.min(v, n - 1));
+
+    function layout() {
+      cards.forEach((card, i) => {
+        const s = coverState(i, cover);
+        card.style.transform = s.transform;
+        card.style.opacity = s.opacity;
+        card.style.zIndex = s.zIndex;
+        card.style.filter = s.filter;
+        card.style.pointerEvents = s.pointerEvents;
+        card.style.cursor = s.cursor;
+        card.classList.toggle('is-active', i === cover);
+      });
+      dots.forEach((d, i) => {
+        d.classList.toggle('is-on', i === cover);
+        d.setAttribute('aria-selected', String(i === cover));
+      });
+    }
+
+    // met à jour le cartouche (fondu doux), sans le faire au tout 1er rendu
+    function updateInfo() {
+      const c = cards[cover];
+      if (!info || !nameEl || !ingEl || !priceEl) return;
+      const apply = () => {
+        nameEl.textContent = c.dataset.name || '';
+        ingEl.textContent = c.dataset.ing || '';
+        priceEl.textContent = c.dataset.price || '';
+        if (linkEl && c.dataset.href) linkEl.href = c.dataset.href;
+        info.classList.remove('is-swapping');
+      };
+      if (reduced) { apply(); return; }
+      info.classList.add('is-swapping');
+      window.clearTimeout(swapTimer);
+      swapTimer = window.setTimeout(apply, 170);
+    }
+
+    const go = (i: number) => {
+      const next = clamp(i);
+      if (next === cover) return;
+      cover = next;
+      layout();
+      updateInfo();
+    };
+    const next = () => go(cover + 1);
+    const prev = () => go(cover - 1);
+
+    document.getElementById('cf-next')?.addEventListener('click', next);
+    document.getElementById('cf-prev')?.addEventListener('click', prev);
+    dots.forEach((d) =>
+      d.addEventListener('click', () => go(parseInt(d.dataset.go || '0', 10)))
+    );
+
+    // clic : verre latéral → centrer ; verre central → ouvrir la fiche
+    cards.forEach((card, i) =>
+      card.addEventListener('click', () => {
+        if (i !== cover) { go(i); return; }
+        const href = card.dataset.href;
+        if (href) window.location.href = href;
+      })
+    );
+
+    // clavier ←/→ (inactif quand le menu plein écran est ouvert)
+    window.addEventListener('keydown', (e) => {
+      if (document.documentElement.classList.contains('menu-open')) return;
+      if (e.key === 'ArrowRight') next();
+      else if (e.key === 'ArrowLeft') prev();
+    });
+
+    // swipe tactile (seuil 42 px)
+    let touchX: number | null = null;
+    stage.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+    stage.addEventListener('touchend', (e) => {
+      if (touchX == null) return;
+      const dx = e.changedTouches[0].clientX - touchX;
+      if (dx < -42) next();
+      else if (dx > 42) prev();
+      touchX = null;
+    }, { passive: true });
+
+    layout();
+  })();
+
+  /* ===================== FILTRES DE LA LISTE ===================== */
+  (function initFilters() {
+    const group = document.getElementById('cocktail-filters');
+    const rows = Array.from(document.querySelectorAll<HTMLElement>('#cocktail-rows .row'));
+    if (!group || !rows.length) return;
+    const btns = Array.from(group.querySelectorAll<HTMLButtonElement>('.filter-btn'));
+
+    const apply = (filter: string) => {
+      for (const row of rows) {
+        const show = filter === 'Tous' || row.dataset.category === filter;
+        row.classList.toggle('is-hidden', !show);
+      }
+      for (const b of btns) {
+        b.setAttribute('aria-pressed', String(b.dataset.filter === filter));
+      }
+    };
+    btns.forEach((b) => b.addEventListener('click', () => apply(b.dataset.filter || 'Tous')));
+  })();
+</script>

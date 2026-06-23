@@ -1,0 +1,92 @@
+---
+/**
+ * Bande d'ambiance — bandeau parallaxe plein écran, SANS texte. Recase les 2
+ * décors « cigarette/fumée » inutilisés (decor-souffle, decor-taffe) en
+ * respirations cinématiques entre les sections, dans l'esprit de la planche DA.
+ * Décoratif uniquement → aria-hidden, pas d'ancre (n'interfère pas avec le scroll).
+ */
+interface Props {
+  /** chemin du décor (servi depuis /public) */
+  image: string;
+  /** position du décor (object-position) */
+  position?: string;
+  /** côté de la fumée / braise, pour varier les 2 bandes */
+  side?: 'left' | 'right';
+}
+const { image, position = 'center', side = 'left' } = Astro.props;
+const sideClass = side === 'right' ? 'is-right' : 'is-left';
+---
+<div class="ambiance" aria-hidden="true">
+  <div
+    class="bg-parallax ambiance-bg"
+    data-parallax="rect"
+    data-speed="-0.06"
+    data-scale="1.2"
+    style={`background-image:url(${image});background-position:${position};`}
+  ></div>
+  <div class="ambiance-overlay"></div>
+  <div class="ambiance-vignette"></div>
+  <div class={`ambiance-smoke ${sideClass}`}></div>
+  <div class={`ambiance-ember ${sideClass}`}></div>
+  <span class="ambiance-rule ambiance-rule-top"></span>
+  <span class="ambiance-rule ambiance-rule-bottom"></span>
+</div>
+
+<style>
+  .ambiance {
+    position: relative;
+    height: clamp(220px, 40vh, 360px);
+    overflow: hidden;
+    background: var(--bg);
+  }
+  /* fondu sombre haut/bas pour souder la bande aux sections adjacentes,
+     milieu plus clair pour révéler la scène */
+  .ambiance-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, var(--bg) 0%, rgba(10,8,7,.6) 16%, rgba(10,8,7,.5) 84%, var(--bg) 100%);
+  }
+  .ambiance-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at 50% 50%, transparent 28%, rgba(0,0,0,.72) 100%);
+  }
+  .ambiance-smoke {
+    position: absolute;
+    bottom: -8%;
+    width: 140px;
+    height: 240px;
+    pointer-events: none;
+    filter: blur(10px);
+    background: radial-gradient(ellipse, rgba(214,200,180,.16), transparent 70%);
+    animation: smokeDrift 12s ease-in-out infinite;
+  }
+  .ambiance-smoke.is-left { left: 22%; }
+  .ambiance-smoke.is-right { right: 22%; animation-delay: 3s; }
+
+  /* braise chaude qui palpite (réutilise la keyframe `ember`) — glint discret */
+  .ambiance-ember {
+    position: absolute;
+    bottom: 44%;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(1px);
+    background: radial-gradient(circle, var(--ember-core), var(--ember-edge) 55%, transparent 72%);
+    animation: ember 3.2s ease-in-out infinite;
+  }
+  .ambiance-ember.is-left { left: 27%; }
+  .ambiance-ember.is-right { right: 27%; animation-delay: 1.4s; }
+
+  .ambiance-rule {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(227,181,82,.35), transparent);
+  }
+  .ambiance-rule-top { top: 0; }
+  .ambiance-rule-bottom { bottom: 0; }
+</style>

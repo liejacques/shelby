@@ -1,0 +1,185 @@
+---
+/**
+ * FICHE COCKTAIL — /carte/[slug]. Une page statique par cocktail (getStaticPaths) :
+ * grand visuel, nom, ingrédients, prix, description, retour + navigation prev/next.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { cocktails } from '../../data/cocktails';
+import CocktailVisual from '../../components/CocktailVisual.astro';
+
+export function getStaticPaths() {
+  return cocktails.map((c) => ({ params: { slug: c.slug }, props: { cocktail: c } }));
+}
+
+const { cocktail } = Astro.props;
+const idx = cocktails.findIndex((c) => c.slug === cocktail.slug);
+const prev = cocktails[(idx - 1 + cocktails.length) % cocktails.length];
+const next = cocktails[(idx + 1) % cocktails.length];
+
+const niceName = cocktail.name.charAt(0) + cocktail.name.slice(1).toLowerCase();
+const title = `${niceName} — Le Shelby · Colmar`;
+const description = `${cocktail.name} : ${cocktail.ingredients}. ${cocktail.price}. ${cocktail.description}`;
+---
+<BaseLayout title={title} description={description}>
+  <section class="fiche">
+    <div class="fiche-bg" aria-hidden="true"></div>
+    <div class="fiche-overlay" aria-hidden="true"></div>
+
+    <div class="wrap fiche-content">
+      <a href="/carte/" class="fiche-back">‹ RETOUR À LA CARTE</a>
+
+      <div class="fiche-grid">
+        <div class="fiche-visual">
+          <CocktailVisual cocktail={cocktail} eager class="cv-fill" />
+        </div>
+
+        <div class="fiche-info">
+          <div class="fiche-cat">{cocktail.category}</div>
+          <h1 class="fiche-name gold-clip">{cocktail.name}</h1>
+          <div class="fiche-divider"></div>
+          <p class="fiche-ing">{cocktail.ingredients}</p>
+          <div class="fiche-price">{cocktail.price}</div>
+          <p class="fiche-desc">{cocktail.description}</p>
+
+          <div class="fiche-actions">
+            <a href="/reservation/" class="btn btn-gold fiche-btn">RÉSERVER UNE TABLE</a>
+            <a href="/carte/" class="btn btn-ghost fiche-btn">RETOUR À LA CARTE</a>
+          </div>
+        </div>
+      </div>
+
+      <nav class="fiche-nav" aria-label="Autres cocktails">
+        <a href={`/carte/${prev.slug}/`} class="fiche-nav-link"><span class="fiche-nav-dir">‹ Précédent</span><span class="fiche-nav-name">{prev.name}</span></a>
+        <a href={`/carte/${next.slug}/`} class="fiche-nav-link fiche-nav-right"><span class="fiche-nav-dir">Suivant ›</span><span class="fiche-nav-name">{next.name}</span></a>
+      </nav>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .fiche { position: relative; overflow: hidden; padding: 40px 22px 76px; min-height: calc(100svh - var(--header-h)); }
+  /* ambiance comptoir floutée en fond (PAS le visuel pixel-art du verre) */
+  .fiche-bg {
+    position: absolute;
+    inset: -10%;
+    background: url(/assets/decor-comptoir.png) center / cover no-repeat;
+    filter: blur(26px) brightness(.36) saturate(1.05);
+    transform: scale(1.1);
+  }
+  .fiche-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10,8,7,.86), rgba(10,8,7,.78) 45%, rgba(10,8,7,.95));
+  }
+  .fiche-content { position: relative; z-index: 2; }
+
+  .fiche-back {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: .18em;
+    color: var(--gold-soft);
+    text-decoration: none;
+    padding: 8px 0;
+    min-height: 44px;
+  }
+  .fiche-back:hover,
+  .fiche-back:focus-visible { color: var(--gold-200); }
+
+  .fiche-grid { display: grid; grid-template-columns: 1fr; gap: 26px; align-items: center; }
+  .fiche-visual {
+    border: 1px solid rgba(227,181,82,.32);
+    background: linear-gradient(180deg, var(--bg-card), var(--bg-card-deep));
+    padding: 22px;
+    box-shadow: 0 24px 60px rgba(0,0,0,.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .fiche-info { text-align: center; }
+  .fiche-cat {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: .26em;
+    color: var(--gold-soft);
+    text-transform: uppercase;
+  }
+  .fiche-name {
+    margin: 12px 0 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(22px, 5.5vw, 38px);
+    line-height: 1.2;
+    letter-spacing: .03em;
+  }
+  .fiche-divider {
+    margin: 18px auto;
+    width: 64px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-soft), transparent);
+  }
+  .fiche-ing {
+    margin: 0 auto;
+    max-width: 460px;
+    font-size: clamp(18px, 3vw, 22px);
+    line-height: 1.35;
+    color: var(--muted-2);
+  }
+  .fiche-price {
+    margin-top: 16px;
+    font-family: var(--font-display);
+    font-size: clamp(26px, 6vw, 38px);
+    color: var(--gold-400);
+    filter: drop-shadow(0 0 10px rgba(227,181,82,.3));
+  }
+  .fiche-desc {
+    margin: 20px auto 0;
+    max-width: 500px;
+    font-size: clamp(17px, 2.6vw, 20px);
+    line-height: 1.5;
+    color: var(--cream-deep);
+  }
+  .fiche-actions {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+  }
+  .fiche-btn { font-size: 12px; padding: 15px 22px; min-height: 48px; letter-spacing: .16em; }
+
+  .fiche-nav {
+    margin-top: 46px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(227,181,82,.16);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .fiche-nav-link { display: flex; flex-direction: column; gap: 5px; text-decoration: none; max-width: 46%; }
+  .fiche-nav-right { text-align: right; margin-left: auto; }
+  .fiche-nav-dir {
+    font-family: var(--font-display);
+    font-size: 9px;
+    letter-spacing: .18em;
+    color: var(--gold-soft);
+  }
+  .fiche-nav-name {
+    font-family: var(--font-display);
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--cream);
+    transition: color .2s ease;
+  }
+  .fiche-nav-link:hover .fiche-nav-name,
+  .fiche-nav-link:focus-visible .fiche-nav-name { color: var(--gold-200); }
+
+  @media (min-width: 720px) {
+    .fiche-grid { grid-template-columns: 1fr 1fr; gap: 40px; }
+    .fiche-info { text-align: left; }
+    .fiche-divider { margin-left: 0; }
+    .fiche-ing, .fiche-desc { margin-left: 0; }
+    .fiche-actions { justify-content: flex-start; }
+  }
+</style>

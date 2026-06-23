@@ -1,0 +1,74 @@
+---
+/**
+ * Bloc réutilisable : 3 panneaux (adresse / horaires / réservation) + ligne méta
+ * (note Google, fondateurs, PMR). Contenu depuis data/site.ts (source unique).
+ * Sans fond ni titre → s'embarque dans n'importe quelle section (accueil, contact).
+ */
+import { site } from '../data/site';
+---
+<div class="infos-grid">
+  <div class="infos-panel">
+    <div class="infos-label">▸ ADRESSE</div>
+    <address class="infos-body">{site.address.street}<br />{site.address.zip} {site.address.city}</address>
+  </div>
+  <div class="infos-panel">
+    <div class="infos-label">▸ HORAIRES</div>
+    <div class="infos-body">{site.hours}<br /><span class="infos-faint">{site.closed}</span></div>
+  </div>
+  <div class="infos-panel">
+    <div class="infos-label">▸ RÉSERVATION</div>
+    <div class="infos-body">
+      <a href={site.phoneHref} class="infos-tel">{site.phoneDisplay}</a><br />
+      <span class="infos-faint">Par téléphone uniquement</span>
+    </div>
+  </div>
+</div>
+
+<div class="infos-meta">
+  <span>★ Google {site.rating}</span>
+  <span aria-hidden="true">•</span>
+  <span>{site.founders}</span>
+  <span aria-hidden="true">•</span>
+  <span>{site.accessibility}</span>
+</div>
+
+<style>
+  .infos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    text-align: left;
+  }
+  .infos-panel {
+    border: 1px solid rgba(227, 181, 82, .3);
+    background: var(--bg-panel);
+    padding: 20px;
+  }
+  .infos-label {
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: .14em;
+    color: var(--gold-400);
+    margin-bottom: 10px;
+  }
+  .infos-body {
+    font-size: 19px;
+    line-height: 1.4;
+    color: var(--cream-deep);
+    font-style: normal;
+  }
+  .infos-tel { color: var(--gold-200); text-decoration: none; }
+  .infos-tel:hover,
+  .infos-tel:focus-visible { text-decoration: underline; }
+  .infos-faint { color: var(--muted-3); }
+
+  .infos-meta {
+    margin-top: 22px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    justify-content: center;
+    font-size: 17px;
+    color: var(--muted-3);
+  }
+</style>

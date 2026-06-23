@@ -1,0 +1,175 @@
+---
+/**
+ * Hero / Accueil — image FIXE plein écran (comptoir) + micro-ambiance subtile :
+ * fondu du logo à l'apparition, fumée légère, vacillement de lampe. Aucune intro,
+ * aucun travelling. Tout est figé sous prefers-reduced-motion (règle globale).
+ * CTA : DÉCOUVRIR → /carte/, RÉSERVER → tel:.
+ */
+import Logo from './Logo.astro';
+import { site } from '../data/site';
+---
+<section class="hero" aria-label="Accueil">
+  <!-- décor COMPTOIR, fixe (pas de parallaxe : hero fixe) -->
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-radial"></div>
+
+  <!-- halo de lampe à gaz qui vacille + fumée légère (décoratif) -->
+  <div class="hero-halo" aria-hidden="true"></div>
+  <div class="hero-smoke hero-smoke-a" aria-hidden="true"></div>
+  <div class="hero-smoke hero-smoke-b" aria-hidden="true"></div>
+
+  <div class="hero-lockup">
+    <Logo width={78} height={42} stroke="#e3b552" fill="rgba(10,8,7,.7)" glow={true} class="hero-mark" />
+    <h1 class="hero-title gold-hero">LE SHELBY</h1>
+    <div class="hero-subtitle">
+      <span class="rule rule-l"></span>
+      <span class="hero-subtitle-text">{site.tagline}</span>
+      <span class="rule rule-r"></span>
+    </div>
+
+    <p class="hero-baseline">Un bar caché.<br />Une époque révolue.<br />Une expérience unique.</p>
+
+    <div class="hero-actions">
+      <a href="/carte/" class="btn btn-gold hero-btn">DÉCOUVRIR</a>
+      <a href={site.phoneHref} class="btn btn-ghost hero-btn">RÉSERVER</a>
+    </div>
+  </div>
+
+  <a href="/carte/" class="hero-hint">▼ NOS COCKTAILS ▼</a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: calc(var(--header-h) + 26px) 22px 72px;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: url(/assets/decor-comptoir.png) center 42% / cover no-repeat;
+    transform: scale(1.04);
+  }
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10,8,7,.6), rgba(10,8,7,.42) 42%, rgba(10,8,7,.95));
+  }
+  .hero-radial {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 56%, rgba(0,0,0,0) 32%, rgba(0,0,0,.62) 100%);
+  }
+  .hero-halo {
+    position: absolute;
+    top: 16%;
+    left: 50%;
+    width: 380px;
+    height: 380px;
+    margin-left: -190px;
+    pointer-events: none;
+    background: radial-gradient(circle, rgba(255,170,60,.26), transparent 65%);
+    animation: flicker 4.5s ease-in-out infinite;
+  }
+  .hero-smoke {
+    position: absolute;
+    width: 120px;
+    height: 200px;
+    pointer-events: none;
+    filter: blur(8px);
+  }
+  .hero-smoke-a {
+    bottom: 6%;
+    left: 22%;
+    background: radial-gradient(ellipse, rgba(214,200,180,.16), transparent 70%);
+    animation: smokeDrift 9s ease-in-out infinite;
+  }
+  .hero-smoke-b {
+    bottom: 10%;
+    right: 24%;
+    background: radial-gradient(ellipse, rgba(214,200,180,.12), transparent 70%);
+    animation: smokeDrift 11s ease-in-out 2.5s infinite;
+  }
+
+  .hero-lockup {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    animation: fadeUp .9s ease-out both;
+  }
+  .hero-mark { margin: 0 auto 8px; }
+  .hero-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(36px, 11vw, 90px);
+    letter-spacing: .03em;
+    line-height: .96;
+    filter: drop-shadow(0 3px 14px rgba(227,181,82,.4));
+  }
+  .gold-hero {
+    background: var(--grad-gold-hero);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero-subtitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-top: 18px;
+  }
+  .rule { height: 1px; width: clamp(24px, 10vw, 60px); }
+  .rule-l { background: linear-gradient(90deg, transparent, var(--gold-soft)); }
+  .rule-r { background: linear-gradient(90deg, var(--gold-soft), transparent); }
+  .hero-subtitle-text {
+    font-family: var(--font-display);
+    font-size: clamp(10px, 2.4vw, 15px);
+    letter-spacing: .4em;
+    color: var(--gold-warm);
+    padding-left: .4em;
+  }
+  .hero-baseline {
+    margin: 26px auto 0;
+    max-width: 420px;
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    font-size: clamp(18px, 4.4vw, 26px);
+    line-height: 1.5;
+    letter-spacing: .12em;
+    color: var(--cream);
+  }
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 32px;
+  }
+  .hero-btn {
+    font-size: 12px;
+    padding: 15px 26px;
+    min-height: 48px;
+    letter-spacing: .2em;
+  }
+  .hero-hint {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    font-family: var(--font-display);
+    font-size: 9px;
+    letter-spacing: .3em;
+    color: var(--gold-soft);
+    text-decoration: none;
+    animation: hintPulse 2.4s ease-in-out infinite;
+  }
+</style>

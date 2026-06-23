@@ -1,0 +1,50 @@
+---
+/**
+ * Logo Le Shelby — chapeau melon (silhouette), repris de la source et soigné
+ * (linecap/linejoin arrondis, géométrie inchangée).
+ *
+ * Slot image pour le futur vrai logo : passe `src="/logo.svg"` (ou .png) et le
+ * composant rend une <img> à la place du SVG, sans rien casser ailleurs.
+ */
+interface Props {
+  width?: number;
+  height?: number;
+  /** couleur des traits */
+  stroke?: string;
+  /** remplissage du dôme */
+  fill?: string;
+  /** halo doré */
+  glow?: boolean;
+  /** chemin d'un vrai logo image (optionnel) → remplace le SVG */
+  src?: string;
+  class?: string;
+}
+const {
+  width = 74,
+  height = 40,
+  stroke = '#e3b552',
+  fill = 'rgba(10,8,7,.7)',
+  glow = true,
+  src,
+  class: cls,
+} = Astro.props;
+
+const glowStyle = glow ? 'filter:drop-shadow(0 0 10px rgba(227,181,82,.5));' : undefined;
+---
+{src ? (
+  <img src={src} width={width} height={height} alt="Le Shelby" class={cls} />
+) : (
+  <svg
+    viewBox="0 0 120 64"
+    width={width}
+    height={height}
+    class={cls}
+    role="img"
+    aria-label="Le Shelby"
+    style={glowStyle}
+  >
+    <ellipse cx="60" cy="50" rx="52" ry="9" fill="none" stroke={stroke} stroke-width="3" stroke-linecap="round" />
+    <path d="M30 50 Q30 16 60 16 Q90 16 90 50" fill={fill} stroke={stroke} stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+    <line x1="32" y1="44" x2="88" y2="44" stroke={stroke} stroke-width="3" stroke-linecap="round" />
+  </svg>
+)}

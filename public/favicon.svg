@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Favicon Le Shelby — chapeau melon (silhouette) sur fond sombre -->
+  <rect width="64" height="64" rx="12" fill="#0a0807"/>
+  <g fill="none" stroke="#e3b552" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- bord du chapeau -->
+    <ellipse cx="32" cy="45" rx="26" ry="5"/>
+    <!-- dôme -->
+    <path d="M15 45 Q15 17 32 17 Q49 17 49 45"/>
+    <!-- ruban -->
+    <line x1="16.5" y1="40" x2="47.5" y2="40"/>
+  </g>
+</svg>

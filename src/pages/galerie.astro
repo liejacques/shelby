@@ -1,0 +1,118 @@
+---
+/**
+ * GALERIE — grille d'ambiance. Les visuels actuels sont des images d'ambiance
+ * (décors) servant de PLACEHOLDERS : à remplacer par les vraies photos du bar.
+ * Chaque emplacement est nommé et remplaçable (src à changer dans `shots`).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+
+interface Shot {
+  src?: string;
+  alt: string;
+  /** mise en avant : occupe 2 colonnes sur grand écran */
+  wide?: boolean;
+  /** placeholder vide à remplacer par une vraie photo */
+  slot?: boolean;
+}
+
+const shots: Shot[] = [
+  { src: '/assets/decor-comptoir.png', alt: 'Le comptoir et ses bouteilles en contre-jour', wide: true },
+  { src: '/assets/decor-salle.png', alt: 'La salle feutrée, lumières basses' },
+  { src: '/assets/decor-porte.png', alt: 'La porte discrète du speakeasy' },
+  { src: '/assets/decor-ruelle.png', alt: 'La ruelle pavée, une nuit pluvieuse', wide: true },
+  { src: '/assets/decor-souffle.png', alt: 'Volutes de fumée dans la pénombre' },
+  { src: '/assets/decor-taffe.png', alt: 'Braise d’une cigarette dans l’ombre' },
+  { alt: 'Emplacement photo — à remplacer', slot: true },
+  { alt: 'Emplacement photo — à remplacer', slot: true },
+];
+---
+<BaseLayout
+  title="Galerie — Le Shelby · Colmar"
+  description="L'ambiance du Shelby en images : comptoir, salle feutrée, lumières basses et atmosphère Prohibition."
+>
+  <div class="gallery-page">
+    <div class="wrap">
+      <PageHeader kicker="Galerie" title="L'AMBIANCE EN IMAGES" subtitle="Quelques fragments d'atmosphère. Poussez la porte pour le reste." />
+
+      <p class="gallery-note">Visuels d'ambiance — à remplacer par les photos réelles du bar.</p>
+
+      <ul class="gallery-grid">
+        {shots.map((s) => (
+          <li class:list={['gallery-cell', { wide: s.wide }]}>
+            {s.slot ? (
+              <div class="gallery-slot" role="img" aria-label={s.alt}>
+                <span class="slot-mark" aria-hidden="true">◈</span>
+                <span class="slot-text">{s.alt}</span>
+              </div>
+            ) : (
+              <img src={s.src} alt={s.alt} loading="lazy" decoding="async" />
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .gallery-page { padding: 40px 22px 76px; }
+  .gallery-note {
+    text-align: center;
+    margin: -8px 0 26px;
+    font-size: 15px;
+    color: var(--muted-3);
+  }
+
+  .gallery-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .gallery-cell {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(227, 181, 82, .2);
+    aspect-ratio: 4 / 3;
+    background: var(--bg-card-deep);
+  }
+  .gallery-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease, filter .5s ease;
+    filter: brightness(.92);
+  }
+  .gallery-cell img:hover { transform: scale(1.05); filter: brightness(1.05); }
+
+  .gallery-slot {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-align: center;
+    padding: 14px;
+    background:
+      repeating-linear-gradient(45deg, rgba(227,181,82,.04) 0 10px, transparent 10px 20px),
+      var(--bg-card-deep);
+  }
+  .slot-mark { font-size: 26px; color: var(--gold-soft); }
+  .slot-text {
+    font-family: var(--font-display);
+    font-size: 9px;
+    letter-spacing: .14em;
+    color: var(--muted-3);
+    line-height: 1.5;
+  }
+
+  @media (min-width: 720px) {
+    .gallery-grid { grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .gallery-cell.wide { grid-column: span 2; aspect-ratio: 16 / 9; }
+  }
+</style>

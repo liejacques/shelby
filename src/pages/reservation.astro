@@ -1,0 +1,142 @@
+---
+/**
+ * RÉSERVATION — téléphone UNIQUEMENT (aucun formulaire date/heure, mission).
+ * Gros bouton APPELER + secondaire NOUS CONTACTER → /contact.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+---
+<BaseLayout
+  title="Réservation — Le Shelby · Colmar"
+  description="Réservez votre table au Shelby par téléphone, du mardi au dimanche à partir de 17h. 03 68 25 20 25."
+>
+  <section class="reserve">
+    <div class="reserve-bg" aria-hidden="true"></div>
+    <div class="reserve-overlay" aria-hidden="true"></div>
+
+    <div class="wrap reserve-content">
+      <div class="reserve-kicker">— RÉSERVATION —</div>
+      <h1 class="reserve-title gold-clip">RÉSERVER UNE TABLE</h1>
+      <p class="reserve-lede">{site.reservationNote}</p>
+      <p class="reserve-sub">Ambiance feutrée garantie. La réservation se fait uniquement par
+        téléphone — pas de réservation en ligne.</p>
+
+      <a href={site.phoneHref} class="call-btn">
+        <span class="call-icon" aria-hidden="true">☎</span>
+        <span class="call-text">
+          <span class="call-label">APPELER LE SHELBY</span>
+          <span class="call-number">{site.phoneDisplay}</span>
+        </span>
+      </a>
+
+      <a href="/contact/" class="btn btn-ghost reserve-secondary">NOUS CONTACTER</a>
+
+      <div class="reserve-hours">
+        <span>▸ {site.hours}</span>
+        <span class="reserve-faint">{site.closed}</span>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .reserve {
+    position: relative;
+    overflow: hidden;
+    min-height: calc(100svh - var(--header-h));
+    display: flex;
+    align-items: center;
+    padding: 56px 22px 76px;
+  }
+  .reserve-bg {
+    position: absolute;
+    inset: 0;
+    background: url(/assets/decor-porte.png) center 40% / cover no-repeat;
+    transform: scale(1.05);
+  }
+  .reserve-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(10,8,7,.74), rgba(10,8,7,.93) 100%);
+  }
+  .reserve-content { position: relative; z-index: 2; text-align: center; }
+
+  .reserve-kicker {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: .4em;
+    color: var(--gold-soft);
+    padding-left: .4em;
+  }
+  .reserve-title {
+    margin: 12px 0 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(26px, 7vw, 46px);
+    letter-spacing: .04em;
+    line-height: 1.05;
+  }
+  .reserve-lede {
+    margin: 20px auto 0;
+    max-width: 480px;
+    font-size: clamp(18px, 3vw, 22px);
+    line-height: 1.45;
+    color: var(--cream);
+  }
+  .reserve-sub {
+    margin: 12px auto 0;
+    max-width: 460px;
+    font-size: 17px;
+    line-height: 1.4;
+    color: var(--muted-3);
+  }
+
+  .call-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 34px;
+    padding: 18px 30px;
+    min-height: 64px;
+    text-decoration: none;
+    color: var(--bg);
+    background: var(--grad-button);
+    border: 1px solid var(--gold-300);
+    box-shadow: 0 14px 40px rgba(227,181,82,.28);
+    transition: background .2s ease, filter .2s ease;
+  }
+  .call-btn:hover,
+  .call-btn:focus-visible { background: var(--gold-200); }
+  .call-icon { font-size: 28px; line-height: 1; }
+  .call-text { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; }
+  .call-label {
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: .18em;
+  }
+  .call-number {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 5vw, 26px);
+    letter-spacing: .04em;
+  }
+
+  .reserve-secondary {
+    display: inline-flex;
+    margin-top: 20px;
+    font-size: 12px;
+    padding: 14px 24px;
+    min-height: 48px;
+    letter-spacing: .18em;
+  }
+
+  .reserve-hours {
+    margin-top: 34px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+    font-size: 17px;
+    color: var(--muted-2);
+  }
+  .reserve-faint { color: var(--muted-3); font-size: 15px; }
+</style>

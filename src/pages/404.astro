@@ -1,0 +1,74 @@
+---
+/**
+ * 404 — page introuvable, thématisée speakeasy. Astro la génère en 404.html
+ * (servie par GitLab Pages / Vercel pour les routes inconnues).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+<BaseLayout
+  title="Porte introuvable — Le Shelby · Colmar"
+  description="Cette porte ne mène nulle part. Retournez à l'accueil du Shelby."
+>
+  <section class="nf">
+    <div class="nf-bg" aria-hidden="true"></div>
+    <div class="nf-overlay" aria-hidden="true"></div>
+    <div class="wrap nf-content">
+      <div class="nf-code gold-clip">404</div>
+      <h1 class="nf-title">CETTE PORTE NE MÈNE NULLE PART</h1>
+      <p class="nf-text">Vous avez frappé à la mauvaise porte. La page que vous cherchez n'existe
+        pas — ou n'a jamais existé, ce qui, dans un speakeasy, arrive plus souvent qu'on ne croit.</p>
+      <div class="nf-actions">
+        <a href="/" class="btn btn-gold nf-btn">RETOUR À L'ACCUEIL</a>
+        <a href="/carte/" class="btn btn-ghost nf-btn">VOIR LA CARTE</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    position: relative;
+    overflow: hidden;
+    min-height: calc(100svh - var(--header-h));
+    display: flex;
+    align-items: center;
+    padding: 56px 22px 76px;
+  }
+  .nf-bg {
+    position: absolute;
+    inset: 0;
+    background: url(/assets/decor-porte.png) center 38% / cover no-repeat;
+    transform: scale(1.05);
+  }
+  .nf-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(10,8,7,.72), rgba(10,8,7,.93) 100%);
+  }
+  .nf-content { position: relative; z-index: 2; text-align: center; }
+  .nf-code {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(64px, 22vw, 150px);
+    line-height: 1;
+    letter-spacing: .04em;
+    filter: drop-shadow(0 3px 18px rgba(227,181,82,.35));
+  }
+  .nf-title {
+    margin: 14px 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(15px, 4vw, 24px);
+    letter-spacing: .06em;
+    color: var(--gold-warm);
+    line-height: 1.3;
+  }
+  .nf-text {
+    margin: 18px auto 0;
+    max-width: 460px;
+    font-size: clamp(17px, 2.6vw, 19px);
+    line-height: 1.5;
+    color: var(--cream-deep);
+  }
+  .nf-actions { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
+  .nf-btn { font-size: 12px; padding: 15px 24px; min-height: 48px; letter-spacing: .16em; }
+</style>

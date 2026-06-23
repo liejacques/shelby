@@ -1,0 +1,17 @@
+{
+  "name": "le-shelby-colmar",
+  "version": "1.0.0",
+  "description": "Site vitrine du speakeasy Le Shelby (Colmar) — reconstruit en Astro statique.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "astro": "^5.7.0"
+  }
+}

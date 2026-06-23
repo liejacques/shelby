@@ -1,0 +1,303 @@
+/* ============================================================================
+   LE SHELBY — feuille de styles globale
+   Couleurs, polices, keyframes et reset extraits AU HEX PRÈS de la source
+   `Le Shelby.dc.html`. Une seule rampe d'or, réutilisée partout via variables.
+   ============================================================================ */
+
+/* ===== POLICES AUTO-HÉBERGÉES — RGPD : aucun CDN externe au runtime =========
+   Fichiers woff2 servis depuis /public/fonts. unicode-range identiques à la
+   source (latin + latin-ext) pour ne charger que le sous-ensemble utile. */
+@font-face {
+  font-family: 'VT323';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/vt323-latin-400.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'VT323';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/vt323-latin-ext-400.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Silkscreen';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/silkscreen-latin-400.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Silkscreen';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(/fonts/silkscreen-latin-ext-400.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Silkscreen';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/silkscreen-latin-700.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Silkscreen';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(/fonts/silkscreen-latin-ext-700.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ===== VARIABLES — palette + tokens ======================================== */
+:root {
+  /* fonds */
+  --bg: #0a0807;          /* noir-brun profond (fond global) */
+  --bg-footer: #070605;   /* footer, encore plus sombre */
+  --bg-card: #171107;     /* haut de carte cocktail */
+  --bg-card-deep: #0d0a07;/* bas de carte cocktail */
+  --bg-panel: rgba(14, 11, 7, 0.55); /* panneaux infos */
+
+  /* rampe d'OR unique (clair → sombre) */
+  --gold-100: #f8e2a0;    /* highlight haut titre héro */
+  --gold-200: #f6dd92;    /* haut logo / H2, état survol clair */
+  --gold-300: #f0cd76;    /* face bouton (haut), nom de carte, bordure bouton */
+  --gold-400: #e3b552;    /* OR principal : bordures, prix, labels, halos */
+  --gold-500: #d8a73e;    /* face bouton (bas), milieu H2, sélection */
+  --gold-600: #9c6f1e;    /* bas de dégradé (sombre) */
+  --gold-soft: #c9a85f;   /* filets fins, petits labels discrets */
+  --gold-warm: #d8b969;   /* sous-titre héro, logo footer */
+
+  /* crèmes / textes */
+  --cream: #e9d9b3;       /* texte courant principal */
+  --cream-deep: #d8c4a0;  /* corps des panneaux infos */
+  --muted-1: #cdbb92;     /* citation héro */
+  --muted-2: #bba67d;     /* ingrédients cocktail */
+  --muted-3: #a78f63;     /* méta secondaire */
+  --muted-4: #94805a;     /* footer estompé (contraste ≥ 5:1 sur le fond) */
+
+  /* braise chaude (famille ambre/feu, PAS un accent concurrent) — tokenisée
+     pour garder la règle « une seule rampe » auditable */
+  --ember-core: rgba(255, 176, 72, .9);
+  --ember-edge: rgba(255, 120, 30, .25);
+
+  /* dégradés réutilisables */
+  --grad-gold-title: linear-gradient(180deg, var(--gold-200), var(--gold-500) 55%, var(--gold-600));
+  --grad-gold-hero: linear-gradient(180deg, var(--gold-100), var(--gold-400) 46%, var(--gold-600));
+  --grad-button: linear-gradient(180deg, var(--gold-300), var(--gold-500));
+
+  /* polices */
+  --font-display: 'Silkscreen', monospace; /* titres / labels / prix */
+  --font-body: 'VT323', monospace;         /* corps de texte */
+
+  /* échelle d'espacement (base 8px) */
+  --sp-1: 8px;
+  --sp-2: 16px;
+  --sp-3: 24px;
+  --sp-4: 32px;
+  --sp-5: 40px;
+
+  /* chrome partagé */
+  --header-h: 60px;          /* hauteur de la barre fixe */
+  --wrap: 980px;             /* largeur max de contenu lisible */
+  --z-header: 60;
+  --z-menu: 100;
+}
+
+/* ===== RESET =============================================================== */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--bg); overflow-x: hidden; }
+body {
+  color: var(--cream);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  position: relative;
+  /* léger grain/vignette d'ensemble appliqué via .site-grain (voir plus bas) */
+}
+::selection { background: var(--gold-500); color: var(--bg); }
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+button { font-family: inherit; }
+
+/* focus visible accessible (clavier) */
+:focus-visible {
+  outline: 2px solid var(--gold-300);
+  outline-offset: 2px;
+}
+
+/* (Intro cinématique abandonnée → hero fixe : keyframes beat1-4 et introAuto retirées.) */
+
+/* ===== AMBIANCE ============================================================ */
+@keyframes flicker {
+  0%, 100% { opacity: .9; }
+  25%  { opacity: .65; }
+  40%  { opacity: 1; }
+  55%  { opacity: .78; }
+  70%  { opacity: .95; }
+  85%  { opacity: .6; }
+}
+@keyframes ember {
+  0%, 100% { opacity: .55; transform: scale(1); }
+  50%      { opacity: 1; transform: scale(1.25); }
+}
+@keyframes smokeDrift {
+  0%   { opacity: 0; transform: translateY(20px) translateX(0) scale(.9); }
+  30%  { opacity: .5; }
+  100% { opacity: 0; transform: translateY(-120px) translateX(28px) scale(1.5); }
+}
+@keyframes fadeUp {
+  0%   { opacity: 0; transform: translateY(26px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: .35; }
+  50%      { opacity: .85; }
+}
+
+/* ===== TITRES OR (clip de texte sur dégradé) =============================== */
+.gold-clip {
+  background: var(--grad-gold-title);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ===== BOUTONS / LIENS-BOUTONS (partagés Hero + Infos) ===================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  letter-spacing: .16em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background .2s ease, color .2s ease, border-color .2s ease, filter .2s ease, transform .08s ease;
+}
+/* léger enfoncement tactile au clic (micro-détail, figé en reduced-motion) */
+.btn:active { transform: translateY(1px); }
+.btn-gold {
+  color: var(--bg);
+  background: var(--grad-button);
+  border-color: var(--gold-300);
+}
+.btn-gold:hover,
+.btn-gold:focus-visible { background: var(--gold-200); }
+.btn-ghost {
+  color: var(--cream);
+  background: rgba(10, 8, 7, .5);
+  border-color: rgba(227, 181, 82, .6);
+  backdrop-filter: blur(3px);
+}
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
+  background: var(--gold-400);
+  color: var(--bg);
+  border-color: var(--gold-400);
+}
+
+/* ===== FOND PARALLAXE (commun aux sections + bandes d'ambiance) ============= */
+.bg-parallax {
+  position: absolute;
+  inset: -9% 0;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  will-change: transform;
+}
+
+/* ===== GRAIN / VIGNETTE GLOBALE — profondeur ===============================
+   Superposition très discrète, non bloquante, pour éviter le rendu « plat ». */
+.site-grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 50% 38%, transparent 55%, rgba(0, 0, 0, .35) 100%);
+  mix-blend-mode: multiply;
+}
+
+/* ===== CHROME PARTAGÉ — utilitaires =======================================
+   Conteneur lisible, décalage sous la barre fixe, skip-link, scroll-lock menu. */
+.wrap { width: 100%; max-width: var(--wrap); margin-inline: auto; }
+
+/* décale le contenu des pages internes sous le header solide (pas le hero) */
+.has-fixed-header { padding-top: var(--header-h); }
+
+/* cible du skip-link : focusable sans anneau visible (conteneur non interactif) */
+#main:focus { outline: none; }
+
+/* visuels cocktails (SVG verre OU PNG fourni) — dimensionnement partagé.
+   image-rendering ne s'applique qu'au cas PNG (sans effet sur le SVG). */
+.cv-fill {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 280px;          /* jamais d'upscale au-delà du natif (cas PNG) */
+  margin-inline: auto;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+.cv-contain {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* visible uniquement pour les lecteurs d'écran */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* lien d'évitement (accessibilité clavier) */
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 200;
+  transform: translateY(-160%);
+  background: var(--gold-300);
+  color: var(--bg);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: .12em;
+  padding: 10px 14px;
+  text-decoration: none;
+  transition: transform .18s ease;
+}
+.skip-link:focus { transform: translateY(0); }
+
+/* verrouille le scroll de l'arrière-plan quand le menu est ouvert */
+html.menu-open, html.menu-open body { overflow: hidden; }
+
+/* ===== prefers-reduced-motion : on fige tout à l'état final ================= */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001s !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: .001s !important;
+    scroll-behavior: auto !important;
+  }
+}

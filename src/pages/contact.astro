@@ -1,0 +1,110 @@
+---
+/**
+ * CONTACT + NOUS TROUVER — coordonnées + plan stylisé (sans embed) + itinéraire.
+ * JSON-LD LocalBusiness activé (cohérent avec l'accueil).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import MapBlock from '../components/MapBlock.astro';
+import { site } from '../data/site';
+---
+<BaseLayout
+  title="Contact & accès — Le Shelby · Colmar"
+  description="Le Shelby, 3a rue Berthe Molly, 68000 Colmar. Téléphone 03 68 25 20 25, ouvert du mardi au dimanche de 17h00 à 01h30. Itinéraire et coordonnées."
+  jsonLd={true}
+>
+  <div class="contact-page">
+    <div class="wrap">
+      <PageHeader kicker="Contact & accès" title="NOUS TROUVER" subtitle="Un lieu discret au cœur de Colmar. Poussez la bonne porte." />
+
+      <div class="contact-grid">
+        <div class="contact-card">
+          <div class="cc-row">
+            <div class="cc-label">▸ ADRESSE</div>
+            <address class="cc-body">{site.address.street}<br />{site.address.zip} {site.address.city}</address>
+          </div>
+          <div class="cc-row">
+            <div class="cc-label">▸ TÉLÉPHONE</div>
+            <a href={site.phoneHref} class="cc-phone">{site.phoneDisplay}</a>
+            <div class="cc-faint">Réservation par téléphone uniquement</div>
+          </div>
+          <div class="cc-row">
+            <div class="cc-label">▸ HORAIRES</div>
+            <div class="cc-body">{site.hours}</div>
+            <div class="cc-faint">{site.closed}</div>
+          </div>
+          {site.email && (
+            <div class="cc-row">
+              <div class="cc-label">▸ EMAIL</div>
+              <a href={`mailto:${site.email}`} class="cc-phone">{site.email}</a>
+            </div>
+          )}
+          <div class="cc-row cc-meta">
+            <span>★ Google {site.rating}</span>
+            <span>{site.accessibility}</span>
+          </div>
+
+          <a href={site.phoneHref} class="btn btn-gold cc-cta">☎ APPELER · {site.phoneDisplay}</a>
+        </div>
+
+        <MapBlock />
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .contact-page { padding: 40px 22px 80px; }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+    align-items: start;
+  }
+
+  .contact-card {
+    border: 1px solid rgba(227, 181, 82, .26);
+    background: var(--bg-panel);
+    padding: 24px;
+  }
+  .cc-row { padding: 14px 0; border-bottom: 1px solid rgba(227, 181, 82, .12); }
+  .cc-row:first-child { padding-top: 0; }
+  .cc-label {
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: .14em;
+    color: var(--gold-400);
+    margin-bottom: 8px;
+  }
+  .cc-body { font-size: 19px; line-height: 1.4; color: var(--cream-deep); font-style: normal; }
+  .cc-phone {
+    font-family: var(--font-display);
+    font-size: clamp(18px, 4.4vw, 22px);
+    color: var(--gold-200);
+    text-decoration: none;
+    letter-spacing: .03em;
+  }
+  .cc-phone:hover,
+  .cc-phone:focus-visible { text-decoration: underline; }
+  .cc-faint { margin-top: 5px; font-size: 15px; color: var(--muted-3); }
+  .cc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-size: 16px;
+    color: var(--muted-3);
+    border-bottom: none;
+  }
+  .cc-cta {
+    width: 100%;
+    margin-top: 20px;
+    font-size: 13px;
+    padding: 16px 18px;
+    min-height: 50px;
+    letter-spacing: .14em;
+  }
+
+  @media (min-width: 760px) {
+    .contact-grid { grid-template-columns: 1fr 1.05fr; gap: 28px; }
+  }
+</style>

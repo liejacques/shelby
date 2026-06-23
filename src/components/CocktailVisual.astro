@@ -1,0 +1,27 @@
+---
+/**
+ * Visuel d'un cocktail = SLOT remplaçable. Si /public/assets/cocktail-<slug>.png
+ * existe (asset fourni), on l'affiche en pixel-art net ; sinon on retombe sur le
+ * verre SVG « collection » (GlassArt). Déposer un PNG suffit à l'activer.
+ */
+import { existsSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import GlassArt from './GlassArt.astro';
+import type { Cocktail } from '../data/cocktails';
+
+interface Props {
+  cocktail: Cocktail;
+  eager?: boolean;
+  /** classe de dimensionnement : 'cv-fill' (remplit la largeur) ou 'cv-contain' (tient dans la boîte) */
+  class?: string;
+}
+const { cocktail, eager = false, class: cls = 'cv-fill' } = Astro.props;
+
+const pngPath = fileURLToPath(new URL(`../../public/assets/cocktail-${cocktail.slug}.png`, import.meta.url));
+const hasPng = existsSync(pngPath);
+---
+{hasPng ? (
+  <img class={cls} src={cocktail.img} alt={cocktail.name} width="280" height="330" loading={eager ? 'eager' : 'lazy'} decoding="async" />
+) : (
+  <GlassArt cocktail={cocktail} class={cls} />
+)}

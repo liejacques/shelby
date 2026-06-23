@@ -1,0 +1,174 @@
+---
+/**
+ * ÉVÉNEMENTS — cartes d'EXEMPLE, clairement marquées illustratives (mission).
+ * Aucune date présentée comme réelle : la vraie programmation est annoncée par
+ * téléphone / sur place. Chaque carte porte un badge « Exemple ».
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { site } from '../data/site';
+
+interface EventSample {
+  title: string;
+  kind: string;
+  blurb: string;
+  glyph: string;
+}
+
+const samples: EventSample[] = [
+  {
+    title: 'Soirée Jazz Live',
+    kind: 'Concert intimiste',
+    glyph: '♪',
+    blurb: 'Un trio de jazz, des lumières basses et un cocktail à la main : l’esprit des clubs clandestins des années 20, le temps d’une soirée.',
+  },
+  {
+    title: 'Cocktail Masterclass',
+    kind: 'Atelier · sur réservation',
+    glyph: '♦',
+    blurb: 'Derrière le comptoir avec nos barmen : techniques, dégustation et secrets de la maison. Places limitées, sur réservation téléphonique.',
+  },
+  {
+    title: 'Dégustation Whiskies',
+    kind: 'Découverte',
+    glyph: '⌖',
+    blurb: 'Une sélection de whiskies racontés et dégustés, pour explorer la matière première de nos classiques. Format convivial.',
+  },
+];
+---
+<BaseLayout
+  title="Événements — Le Shelby · Colmar"
+  description="Soirées jazz, masterclass cocktails, dégustations : un aperçu des formats d'événements du Shelby. La programmation réelle est communiquée par téléphone."
+>
+  <div class="events-page">
+    <div class="wrap">
+      <PageHeader kicker="Événements" title="LES SOIRÉES DU SHELBY" subtitle="Un aperçu de ce qui peut se vivre au Shelby." />
+
+      <p class="events-banner" role="note">
+        <span class="eb-tag">À titre d'exemple</span>
+        Ces événements sont <strong>illustratifs</strong> — aucune date n'est garantie.
+        La programmation réelle est annoncée sur place et par téléphone au
+        <a href={site.phoneHref}>{site.phoneDisplay}</a>.
+      </p>
+
+      <ul class="events-grid">
+        {samples.map((e) => (
+          <li class="event-card">
+            <div class="event-top">
+              <span class="event-glyph" aria-hidden="true">{e.glyph}</span>
+              <span class="event-badge">Exemple</span>
+            </div>
+            <h2 class="event-title">{e.title}</h2>
+            <div class="event-kind">{e.kind}</div>
+            <p class="event-blurb">{e.blurb}</p>
+            <a href={site.phoneHref} class="event-link">Se renseigner ☎</a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="events-cta">
+        <a href="/reservation/" class="btn btn-gold events-btn">RÉSERVER UNE TABLE</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .events-page { padding: 40px 22px 76px; }
+
+  .events-banner {
+    max-width: 640px;
+    margin: -6px auto 30px;
+    padding: 16px 18px;
+    border: 1px dashed rgba(227, 181, 82, .4);
+    background: rgba(227, 181, 82, .05);
+    border-radius: 2px;
+    font-size: 16px;
+    line-height: 1.5;
+    color: var(--cream-deep);
+    text-align: center;
+  }
+  .eb-tag {
+    display: inline-block;
+    margin-right: 8px;
+    font-family: var(--font-display);
+    font-size: 9px;
+    letter-spacing: .14em;
+    color: var(--bg);
+    background: var(--gold-300);
+    padding: 4px 8px;
+    vertical-align: middle;
+  }
+  .events-banner strong { color: var(--gold-200); font-weight: 400; }
+  .events-banner a { color: var(--gold-200); }
+
+  .events-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .event-card {
+    border: 1px solid rgba(227, 181, 82, .24);
+    background: var(--bg-panel);
+    padding: 22px;
+    display: flex;
+    flex-direction: column;
+  }
+  .event-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .event-glyph { font-size: 22px; color: var(--gold-400); }
+  .event-badge {
+    font-family: var(--font-display);
+    font-size: 9px;
+    letter-spacing: .14em;
+    color: var(--gold-soft);
+    border: 1px solid rgba(227, 181, 82, .4);
+    padding: 4px 9px;
+  }
+  .event-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(15px, 3.6vw, 18px);
+    letter-spacing: .03em;
+    color: var(--gold-300);
+  }
+  .event-kind {
+    margin-top: 6px;
+    font-size: 15px;
+    color: var(--muted-3);
+  }
+  .event-blurb {
+    margin: 14px 0 18px;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--cream-deep);
+    flex: 1 1 auto;
+  }
+  .event-link {
+    align-self: flex-start;
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: .14em;
+    color: var(--gold-200);
+    text-decoration: none;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .event-link:hover,
+  .event-link:focus-visible { text-decoration: underline; }
+
+  .events-cta { text-align: center; margin-top: 34px; }
+  .events-btn { font-size: 12px; padding: 15px 26px; min-height: 48px; letter-spacing: .18em; }
+
+  @media (min-width: 760px) {
+    .events-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>

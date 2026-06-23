@@ -1,0 +1,99 @@
+---
+/**
+ * Bloc carte STYLISÉ (RGPD : aucun embed Google, aucune requête au chargement).
+ * Plan abstrait dessiné en SVG + bouton ITINÉRAIRE qui ouvre Google Maps au clic.
+ */
+import { site } from '../data/site';
+---
+<figure class="mapblock">
+  <svg class="map-svg" viewBox="0 0 600 360" role="img" aria-label="Plan stylisé du quartier du Shelby, à Colmar" preserveAspectRatio="xMidYMid slice">
+    <rect class="map-bg" x="0" y="0" width="600" height="360" />
+    <!-- pâtés de maisons -->
+    <g class="map-blocks">
+      <rect x="40" y="40" width="150" height="90" rx="3" />
+      <rect x="220" y="30" width="120" height="70" rx="3" />
+      <rect x="430" y="55" width="130" height="95" rx="3" />
+      <rect x="60" y="220" width="120" height="100" rx="3" />
+      <rect x="410" y="230" width="150" height="95" rx="3" />
+    </g>
+    <!-- rivière (clin d'œil à la Lauch / Petite Venise) -->
+    <path class="map-river" d="M-10 300 C 120 250, 200 320, 320 250 S 520 180, 620 220" />
+    <!-- rues -->
+    <g class="map-streets">
+      <line x1="0" y1="170" x2="600" y2="150" />
+      <line x1="0" y1="200" x2="600" y2="188" />
+      <line x1="210" y1="0" x2="240" y2="360" />
+      <line x1="380" y1="0" x2="360" y2="360" />
+      <line x1="60" y1="0" x2="90" y2="360" />
+    </g>
+    <!-- rue du Shelby (mise en avant) -->
+    <line class="map-street-main" x1="120" y1="360" x2="330" y2="120" />
+    <!-- pin -->
+    <g class="map-pin" transform="translate(300 178)">
+      <circle class="pin-ring" r="30" />
+      <circle class="pin-halo" r="15" />
+      <path class="pin-body" d="M0 -22 C 12 -22, 18 -12, 18 -3 C 18 9, 6 16, 0 26 C -6 16, -18 9, -18 -3 C -18 -12, -12 -22, 0 -22 Z" />
+      <circle class="pin-core" cy="-4" r="6" />
+    </g>
+  </svg>
+
+  <figcaption class="map-cap">
+    <div class="map-where">{site.addressLine}</div>
+    <a href={site.mapsUrl} target="_blank" rel="noopener noreferrer" class="btn btn-gold map-btn">ITINÉRAIRE ↗<span class="sr-only"> (ouvre Google Maps dans un nouvel onglet)</span></a>
+    <p class="map-note">Plan illustratif — l'itinéraire ouvre Google Maps dans un nouvel onglet.</p>
+  </figcaption>
+</figure>
+
+<style>
+  .mapblock {
+    margin: 0;
+    border: 1px solid rgba(227, 181, 82, .26);
+    background: var(--bg-card-deep);
+    overflow: hidden;
+  }
+  .map-svg {
+    display: block;
+    width: 100%;
+    height: clamp(220px, 46vw, 320px);
+    background: radial-gradient(ellipse at 50% 40%, #14100a, #0a0807 75%);
+  }
+  .map-bg { fill: transparent; }
+  .map-blocks rect {
+    fill: rgba(227, 181, 82, .05);
+    stroke: rgba(227, 181, 82, .16);
+    stroke-width: 1;
+  }
+  .map-streets line { stroke: rgba(201, 168, 95, .22); stroke-width: 2; }
+  .map-river {
+    fill: none;
+    stroke: rgba(120, 150, 160, .3);
+    stroke-width: 7;
+    stroke-linecap: round;
+  }
+  .map-street-main { stroke: rgba(227, 181, 82, .5); stroke-width: 3; stroke-linecap: round; }
+
+  .pin-ring { fill: none; stroke: rgba(227, 181, 82, .5); stroke-width: 1.5; transform-origin: center; animation: pinPulse 2.8s ease-in-out infinite; }
+  .pin-halo { fill: rgba(255, 176, 72, .18); }
+  .pin-body { fill: var(--gold-400); stroke: var(--gold-200); stroke-width: 1; }
+  .pin-core { fill: var(--bg); }
+
+  @keyframes pinPulse {
+    0%, 100% { opacity: .55; transform: scale(.8); }
+    50%      { opacity: 0; transform: scale(1.35); }
+  }
+
+  .map-cap {
+    padding: 18px 18px 22px;
+    text-align: center;
+    border-top: 1px solid rgba(227, 181, 82, .16);
+  }
+  .map-where { font-size: 18px; color: var(--cream-deep); }
+  .map-btn {
+    margin-top: 14px;
+    font-size: 12px;
+    padding: 14px 26px;
+    min-height: 48px;
+    letter-spacing: .18em;
+  }
+  .map-note { margin: 12px 0 0; font-size: 14px; color: var(--muted-3); }
+</style>

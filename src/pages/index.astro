@@ -1,0 +1,213 @@
+---
+/**
+ * ACCUEIL — hero fixe + respirations cinématiques + teasers vers les pages clés
+ * (carte, histoire, infos). Header transparent posé sur le hero ; JSON-LD activé.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import AmbianceBand from '../components/AmbianceBand.astro';
+import InfosPanels from '../components/InfosPanels.astro';
+import { cocktails } from '../data/cocktails';
+import { site } from '../data/site';
+import CocktailVisual from '../components/CocktailVisual.astro';
+
+// teaser : les 3 signatures de la maison
+const featured = cocktails.filter((c) => c.category === 'Signatures');
+---
+<BaseLayout headerVariant="transparent" jsonLd={true}>
+  <Hero />
+
+  <!-- TEASER CARTE -->
+  <section class="teaser carte-teaser" aria-labelledby="carte-teaser-h">
+    <div class="wrap">
+      <div class="teaser-head">
+        <div class="t-kicker">— NOS COCKTAILS —</div>
+        <h2 id="carte-teaser-h" class="t-title gold-clip">LA CARTE</h2>
+        <p class="t-lede">Six créations, deux familles : nos relectures de grands classiques
+          et les signatures nées derrière le comptoir.</p>
+      </div>
+
+      <ul class="feature-grid">
+        {featured.map((c) => (
+          <li class="feature-card">
+            <a href={`/carte/${c.slug}/`} class="feature-link">
+              <div class="feature-imgwrap">
+                <CocktailVisual cocktail={c} class="cv-contain" />
+              </div>
+              <div class="feature-name">{c.name}</div>
+              <div class="feature-meta"><span class="feature-tag">Signature</span><span class="feature-price">{c.price}</span></div>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="teaser-cta">
+        <a href="/carte/" class="btn btn-gold t-btn">VOIR LA CARTE COMPLÈTE</a>
+      </div>
+    </div>
+  </section>
+
+  <AmbianceBand image="/assets/decor-souffle.png" position="center 35%" side="left" />
+
+  <!-- TEASER LE BAR -->
+  <section class="teaser bar-teaser" aria-labelledby="bar-teaser-h">
+    <div class="wrap bar-teaser-grid">
+      <div class="bar-teaser-img">
+        <img src="/assets/decor-salle.png" alt="La salle feutrée du Shelby, en contre-jour" width="640" height="420" loading="lazy" decoding="async" />
+      </div>
+      <div class="bar-teaser-text">
+        <div class="t-kicker">— LE BAR —</div>
+        <h2 id="bar-teaser-h" class="t-title gold-clip">UN LIEU HORS DU TEMPS</h2>
+        <p class="t-body">Derrière une porte discrète se cache un bar clandestin inspiré des
+          speakeasies de la Prohibition. Lumières basses, cuivres patinés et confidences à voix
+          basse : chaque détail a été pensé pour vous faire voyager.</p>
+        <a href="/le-bar/" class="btn btn-ghost t-btn">NOTRE HISTOIRE</a>
+      </div>
+    </div>
+  </section>
+
+  <AmbianceBand image="/assets/decor-taffe.png" position="center 42%" side="right" />
+
+  <!-- TEASER INFOS -->
+  <section class="teaser infos-teaser" aria-labelledby="infos-teaser-h">
+    <div class="infos-teaser-bg" aria-hidden="true"></div>
+    <div class="infos-teaser-overlay" aria-hidden="true"></div>
+    <div class="wrap infos-teaser-content">
+      <div class="t-kicker">— OÙ NOUS TROUVER —</div>
+      <h2 id="infos-teaser-h" class="t-title gold-clip">LE SHELBY · COLMAR</h2>
+      <InfosPanels />
+      <div class="infos-teaser-cta">
+        <a href={site.phoneHref} class="btn btn-gold t-btn">☎ RÉSERVER · {site.phoneDisplay}</a>
+        <a href="/contact/" class="btn btn-ghost t-btn">NOUS TROUVER</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .teaser { position: relative; padding: 72px 22px; }
+  .teaser-head { text-align: center; }
+  .t-kicker {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: .4em;
+    color: var(--gold-soft);
+    padding-left: .4em;
+  }
+  .t-title {
+    margin: 12px 0 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(24px, 6vw, 42px);
+    letter-spacing: .04em;
+    line-height: 1.05;
+  }
+  .t-lede {
+    margin: 16px auto 0;
+    max-width: 560px;
+    font-size: clamp(17px, 2.6vw, 20px);
+    line-height: 1.45;
+    color: var(--muted-1);
+  }
+  .t-btn { font-size: 12px; padding: 15px 26px; min-height: 48px; letter-spacing: .18em; }
+
+  /* --- teaser carte --- */
+  .feature-grid {
+    list-style: none;
+    margin: 38px 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .feature-link { display: block; text-decoration: none; }
+  .feature-card {
+    border: 1px solid rgba(227, 181, 82, .26);
+    background: linear-gradient(180deg, var(--bg-card), var(--bg-card-deep));
+    padding: 12px;
+    transition: border-color .2s ease, transform .25s ease;
+  }
+  .feature-card:hover { border-color: rgba(227, 181, 82, .6); transform: translateY(-3px); }
+  .feature-imgwrap {
+    border: 1px solid rgba(227, 181, 82, .2);
+    background: var(--bg-card-deep);
+    height: clamp(180px, 42vw, 220px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+  }
+  .feature-name {
+    margin-top: 14px;
+    font-family: var(--font-display);
+    font-size: clamp(11px, 2.6vw, 13px);
+    line-height: 1.5;
+    letter-spacing: .03em;
+    color: var(--gold-300);
+    text-align: center;
+  }
+  .feature-meta {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .feature-tag {
+    font-family: var(--font-display);
+    font-size: 9px;
+    letter-spacing: .16em;
+    color: var(--gold-soft);
+    border: 1px solid rgba(227, 181, 82, .35);
+    padding: 4px 8px;
+  }
+  .feature-price {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--gold-400);
+  }
+  .teaser-cta { text-align: center; margin-top: 34px; }
+
+  /* --- teaser le bar --- */
+  .bar-teaser-grid { display: grid; grid-template-columns: 1fr; gap: 26px; align-items: center; }
+  .bar-teaser-img { border: 1px solid rgba(227, 181, 82, .22); overflow: hidden; }
+  .bar-teaser-img img { width: 100%; height: clamp(220px, 56vw, 360px); object-fit: cover; }
+  .bar-teaser-text { text-align: center; }
+  .t-body {
+    margin: 16px auto 24px;
+    max-width: 540px;
+    font-size: clamp(17px, 2.6vw, 19px);
+    line-height: 1.5;
+    color: var(--cream-deep);
+  }
+
+  /* --- teaser infos --- */
+  .infos-teaser { overflow: hidden; padding: 84px 22px 76px; }
+  .infos-teaser-bg {
+    position: absolute;
+    inset: 0;
+    background: url(/assets/decor-comptoir.png) center / cover no-repeat;
+    transform: scale(1.05);
+  }
+  .infos-teaser-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10,8,7,.96), rgba(10,8,7,.82) 45%, rgba(10,8,7,.97));
+  }
+  .infos-teaser-content { position: relative; z-index: 2; text-align: center; }
+  .infos-teaser-content :global(.infos-grid) { margin-top: 32px; }
+  .infos-teaser-cta {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    justify-content: center;
+  }
+
+  /* tablette + */
+  @media (min-width: 680px) {
+    .feature-grid { grid-template-columns: repeat(3, 1fr); }
+    .bar-teaser-grid { grid-template-columns: 1.05fr .95fr; }
+    .bar-teaser-text { text-align: left; }
+    .bar-teaser-text .t-body { margin-left: 0; }
+  }
+</style>

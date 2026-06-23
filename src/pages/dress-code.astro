@@ -1,0 +1,123 @@
+---
+/**
+ * DRESS CODE — élégance des années 1920. Visuel « couple en silhouette » :
+ * emplacement remplaçable (pas d'asset dédié pour l'instant).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+
+const yes = ['Tenue chic et élégante', 'Costume, belle chemise, jolie robe', 'Esprit rétro / années 1920 bienvenu', 'Souliers soignés'];
+const no = ['Tenue de sport, survêtement', 'Tongs / claquettes', 'Casquette, capuche', 'Débardeur'];
+---
+<BaseLayout
+  title="Dress code — Le Shelby · Colmar"
+  description="L'élégance fait partie de l'expérience au Shelby : tenue chic et élégante appréciée, dans l'esprit des années 1920."
+>
+  <section class="dc-hero">
+    <div class="dc-hero-bg" aria-hidden="true"></div>
+    <div class="dc-hero-overlay" aria-hidden="true"></div>
+    <div class="wrap dc-hero-content">
+      <PageHeader kicker="Dress code" title="L'ÉLÉGANCE FAIT PARTIE DE L'EXPÉRIENCE" />
+      <p class="dc-tag">Tenue chic et élégante appréciée. L'esprit Shelby, tout simplement.</p>
+    </div>
+  </section>
+
+  <section class="dc-body">
+    <div class="wrap dc-grid">
+      <figure class="dc-figure">
+        <div class="dc-slot" role="img" aria-label="Emplacement photo — couple élégant en silhouette, à remplacer">
+          <span class="slot-mark" aria-hidden="true">✦</span>
+          <span class="slot-text">COUPLE EN SILHOUETTE<br />— emplacement à remplacer —</span>
+        </div>
+        <figcaption>Visuel à remplacer par une vraie photo d'ambiance.</figcaption>
+      </figure>
+
+      <div class="dc-text">
+        <p class="dc-lede">Le Shelby est une parenthèse hors du temps : on s'y habille comme on
+          entrait dans les clubs clandestins des années 1920 — avec soin et un brin de mystère.</p>
+
+        <div class="dc-cols">
+          <div class="dc-col">
+            <div class="dc-col-h dc-yes">✓ APPRÉCIÉ</div>
+            <ul>{yes.map((i) => <li>{i}</li>)}</ul>
+          </div>
+          <div class="dc-col">
+            <div class="dc-col-h dc-no">✕ À ÉVITER</div>
+            <ul>{no.map((i) => <li>{i}</li>)}</ul>
+          </div>
+        </div>
+
+        <p class="dc-faint">Le dress code n'est pas une contrainte : c'est une invitation à entrer
+          pleinement dans l'ambiance. Une tenue soignée suffit.</p>
+
+        <a href="/reservation/" class="btn btn-gold dc-btn">RÉSERVER UNE TABLE</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .dc-hero { position: relative; overflow: hidden; padding: 56px 22px 36px; }
+  .dc-hero-bg {
+    position: absolute;
+    inset: 0;
+    background: url(/assets/decor-salle.png) center 30% / cover no-repeat;
+    transform: scale(1.05);
+  }
+  .dc-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10,8,7,.78), rgba(10,8,7,.74) 45%, var(--bg));
+  }
+  .dc-hero-content { position: relative; z-index: 2; text-align: center; }
+  .dc-tag {
+    margin: 4px auto 0;
+    max-width: 520px;
+    font-size: clamp(17px, 2.8vw, 20px);
+    line-height: 1.45;
+    color: var(--muted-1);
+  }
+
+  .dc-body { padding: 16px 22px 70px; }
+  .dc-grid { display: grid; grid-template-columns: 1fr; gap: 30px; align-items: start; }
+
+  .dc-figure { margin: 0; border: 1px solid rgba(227,181,82,.22); overflow: hidden; background: var(--bg-card-deep); }
+  .dc-slot {
+    aspect-ratio: 4 / 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-align: center;
+    padding: 16px;
+    background:
+      repeating-linear-gradient(45deg, rgba(227,181,82,.04) 0 10px, transparent 10px 20px),
+      var(--bg-card-deep);
+  }
+  .slot-mark { font-size: 30px; color: var(--gold-soft); }
+  .slot-text { font-family: var(--font-display); font-size: 10px; letter-spacing: .14em; color: var(--muted-3); line-height: 1.7; }
+  .dc-figure figcaption { padding: 11px 14px; font-size: 14px; color: var(--muted-3); border-top: 1px solid rgba(227,181,82,.14); }
+
+  .dc-text { font-size: clamp(17px, 2.6vw, 19px); line-height: 1.55; color: var(--cream-deep); }
+  .dc-lede { margin: 0 0 22px; color: var(--cream); font-size: clamp(18px, 3vw, 21px); }
+
+  .dc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 8px 0 22px; }
+  .dc-col {
+    border: 1px solid rgba(227,181,82,.2);
+    background: var(--bg-panel);
+    padding: 16px;
+  }
+  .dc-col-h { font-family: var(--font-display); font-size: 11px; letter-spacing: .12em; margin-bottom: 12px; }
+  .dc-yes { color: var(--gold-300); }
+  .dc-no { color: var(--muted-3); }
+  .dc-col ul { list-style: none; margin: 0; padding: 0; }
+  .dc-col li { font-size: 16px; line-height: 1.3; padding: 6px 0; border-top: 1px solid rgba(227,181,82,.1); }
+  .dc-col li:first-child { border-top: none; }
+  .dc-faint { color: var(--muted-3); }
+  .dc-btn { margin-top: 14px; font-size: 12px; padding: 15px 24px; min-height: 48px; letter-spacing: .16em; }
+
+  @media (min-width: 820px) {
+    .dc-grid { grid-template-columns: .85fr 1.15fr; gap: 40px; }
+  }
+</style>

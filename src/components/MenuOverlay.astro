@@ -1,0 +1,202 @@
+---
+/**
+ * Menu plein écran (burger). Dialog accessible : focus-trap, Esc, scroll-lock,
+ * retour de focus — câblé dans scripts/site.ts. Fermé par défaut (aria-hidden).
+ */
+import { mainNav, legalNav, isActive } from '../data/nav';
+import { site } from '../data/site';
+
+interface Props {
+  activePath?: string;
+}
+const { activePath = Astro.url.pathname } = Astro.props;
+---
+<div
+  id="site-menu"
+  class="menu"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Menu de navigation"
+  aria-hidden="true"
+>
+  <div class="menu-bg" aria-hidden="true"></div>
+  <div class="menu-overlay" aria-hidden="true"></div>
+
+  <div class="menu-panel">
+    <div class="menu-top">
+      <span class="menu-kicker">— LE SHELBY · COLMAR —</span>
+      <button id="menu-close" class="menu-close" type="button" aria-label="Fermer le menu">
+        <span aria-hidden="true">✕</span> FERMER
+      </button>
+    </div>
+
+    <nav class="menu-nav" aria-label="Navigation principale">
+      <ul>
+        {mainNav.map((link) => (
+          <li>
+            <a href={link.href} class:list={['menu-link', { 'is-current': isActive(link.href, activePath) }]} aria-current={isActive(link.href, activePath) ? 'page' : undefined}>
+              <span class="menu-glyph" aria-hidden="true">{link.glyph}</span>
+              <span class="menu-label">{link.label}</span>
+              <span class="menu-chevron" aria-hidden="true">›</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="menu-foot">
+      <a href={site.phoneHref} class="btn btn-gold menu-cta">☎ RÉSERVER · {site.phoneDisplay}</a>
+      <div class="menu-legal">
+        {legalNav.map((link, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true">·</span>}
+            <a href={link.href}>{link.label}</a>
+          </>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-menu);
+    /* fermé par défaut */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-1.2%);
+    transition: opacity .32s ease, transform .42s cubic-bezier(.22,.61,.36,1), visibility 0s linear .32s;
+  }
+  .menu.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+    transition: opacity .32s ease, transform .42s cubic-bezier(.22,.61,.36,1);
+  }
+
+  .menu-bg {
+    position: absolute;
+    inset: 0;
+    background: url(/assets/decor-salle.png) center/cover no-repeat;
+    transform: scale(1.08);
+    filter: brightness(.5);
+  }
+  .menu-overlay {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 30%, rgba(0,0,0,.35), rgba(0,0,0,.78) 100%),
+      linear-gradient(180deg, rgba(10,8,7,.94), rgba(10,8,7,.9));
+  }
+
+  .menu-panel {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    padding: calc(var(--header-h) - 8px) clamp(20px, 6vw, 40px) 28px;
+    overflow-y: auto;
+  }
+
+  .menu-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(227,181,82,.18);
+  }
+  .menu-kicker {
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: .34em;
+    color: var(--gold-soft);
+  }
+  .menu-close {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    min-height: 44px;
+    padding: 6px 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: .2em;
+    color: var(--cream);
+  }
+  .menu-close:hover,
+  .menu-close:focus-visible { color: var(--gold-200); }
+
+  .menu-nav {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+  }
+  .menu-nav ul { list-style: none; margin: 0; padding: 0; width: 100%; }
+  .menu-nav li + li { border-top: 1px solid rgba(227,181,82,.12); }
+
+  .menu-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 17px 4px;
+    text-decoration: none;
+    color: var(--cream);
+    font-family: var(--font-display);
+    font-size: clamp(15px, 4.2vw, 19px);
+    letter-spacing: .08em;
+    transition: color .2s ease, padding-left .2s ease;
+  }
+  .menu-link:hover,
+  .menu-link:focus-visible { color: var(--gold-200); padding-left: 10px; }
+  .menu-link.is-current { color: var(--gold-300); }
+  .menu-glyph {
+    width: 26px;
+    text-align: center;
+    color: var(--gold-400);
+    font-size: 16px;
+    flex: none;
+  }
+  .menu-label { flex: 1 1 auto; }
+  .menu-chevron { color: var(--gold-soft); font-size: 20px; }
+
+  .menu-foot {
+    flex: none;
+    padding-top: 16px;
+    border-top: 1px solid rgba(227,181,82,.18);
+    text-align: center;
+  }
+  .menu-cta {
+    width: 100%;
+    font-size: 13px;
+    padding: 16px 18px;
+    min-height: 48px;
+  }
+  .menu-legal {
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--muted-3);
+  }
+  .menu-legal a { color: var(--muted-3); text-decoration: none; }
+  .menu-legal a:hover,
+  .menu-legal a:focus-visible { color: var(--gold-soft); text-decoration: underline; }
+
+  @media (min-height: 720px) {
+    .menu-link { padding: 20px 4px; }
+  }
+</style>
